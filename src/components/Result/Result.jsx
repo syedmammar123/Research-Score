@@ -1269,7 +1269,7 @@ const Result = ( {userData,rating,stdData}) => {
 
 
   const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: import.meta.env.VITE_OPENAI_KEY,
   dangerouslyAllowBrowser: true
 });
 
@@ -1323,23 +1323,23 @@ const Result = ( {userData,rating,stdData}) => {
     }
     
     const message = await openai.beta.threads.messages.create(
-    'thread_tywwg1xQm8qI6bRzNbBuSsgk',
+      import.meta.env.VITE_THREAD_ID_1,
     {
       role: "user",
       content: `Specialty:${specialty} \n${title}`
     })
 
     const run = await openai.beta.threads.runs.create(
-   'thread_tywwg1xQm8qI6bRzNbBuSsgk',
+      import.meta.env.VITE_THREAD_ID_1,
     { 
-      assistant_id:'asst_R4DPYBCfuCRfCy5mlnh6lltK'
+      assistant_id:import.meta.env.VITE_ASST_ID_1
     }
     );
 
-    const status = await statusCheckLoop('thread_tywwg1xQm8qI6bRzNbBuSsgk', run.id);
+    const status = await statusCheckLoop(import.meta.env.VITE_THREAD_ID_1, run.id);
 
     const messages = await openai.beta.threads.messages.list(
-         'thread_tywwg1xQm8qI6bRzNbBuSsgk',
+      import.meta.env.VITE_THREAD_ID_1,
     );
     let response = messages.data[0].content[0].text.value;
     var num = parseInt(response);
