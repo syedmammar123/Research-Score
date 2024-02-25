@@ -1,0 +1,121 @@
+.container {
+    width: 80%;
+    height: 84vh;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow-y: hidden;
+   
+    /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+}
+table {
+    width: 100%;
+    border: none;
+    border-spacing: 0px;
+}
+
+ 
+td {
+    /* border-left: 1px solid black; */
+    text-align: center;
+    padding-bottom: 7px;
+    padding-top: 7px;
+    border: none;
+}
+
+
+
+
+h2{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+.sce{
+    text-align: center;
+    overflow-y: scroll;
+    height: 100%;
+    background-color: transparent;
+
+}
+
+
+.mainHeader {
+    display: flex;
+    align-items: center;
+    background-color: rgba(109, 201, 255, 0.102);   
+    width: 100%;
+    text-align: center;
+    padding: 5px 0px ;
+    font-size: 20px;
+    font-weight: 600;
+    border: none !important;
+    box-shadow: 0px 0px 36px lightblue;
+
+}
+.mainHeader .mainHeader1{
+    border: none !important;
+}
+.mainHeader .mainHeader2{
+    border: none !important;
+}
+.mainHeader .mainHeader3 {
+    border: none !important;
+}
+
+.mainHeader1 {
+    width: 20%;
+    border-bottom: 1px solid #caeaff;
+}    
+.mainHeader2 {
+    width: 55%;
+    border-bottom: 1px solid #caeaff;
+}
+.mainHeader3 {
+        width: 25%;
+        border-bottom: 1px solid #caeaff;
+}
+
+::-webkit-scrollbar {
+  width: 1px;
+}
+
+tr:hover{
+    background-color:  #caeaff53;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(255, 255, 255, 0.7); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
+}
+
+.loading-spinner {
+  border: 4px solid  rgba(0, 0, 0, 0.1);
+  border-left-color: #250096;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: 10px;
+  margin-left: 20px;
+}

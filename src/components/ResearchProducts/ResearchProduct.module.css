@@ -1,0 +1,186 @@
+.container {
+    max-width: 40%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+}
+
+.inputContainer {
+    margin-bottom: 15px;
+    /* background: #000; */
+}
+
+.headerButtons{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.headerButtons button{
+    padding: 10px 8px;
+    background-color: #00cf61;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    cursor: pointer;
+  
+}
+
+
+
+
+.flName{
+    display: flex;
+    justify-content: space-evenly;
+
+}
+.flName > input{
+    width: 35% !important;
+}
+.inputContainer input[type="text"]{
+    width: 80%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin: 5px 0px;
+    background-color: transparent;
+    font-family: "Montserrat", sans-serif;
+    color: #250096;
+
+}
+.inputContainer input[type="text"]::placeholder{
+   color: #1d0072a6;
+}
+.inputDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.inputDiv  select {
+    /* align-self: flex-start; */
+    width: 80%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin: 5px 0px;
+    background-color: transparent;
+    color: #250096;
+  font-family: "Montserrat", sans-serif;
+}
+
+
+.addButton{
+    padding: 10px 8px;
+    background-color: #250096d9;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.prodNoDiv{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0px;
+}
+/* .prodNoDiv button{
+} */
+
+.calBtn button{
+    padding: 10px 10px;
+    background-color: green;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    
+}
+.calBtn {
+    display: flex; 
+    /* align-items: end;    */
+    justify-content: end;
+    margin: 10px 0px;
+}
+.modal{
+    display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 3%; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modalBody{
+    margin: 0 auto;
+    padding: 20px;
+    width: 80%;
+    height: 95%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    overflow-y: scroll;
+
+}
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+  position: absolute;
+  top: 8%;
+  left: 85%;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+@media (max-width:600px) {
+    .close {
+    top: 6%;
+    left: 80%;
+}
+
+    .container {
+    max-width: 85%;
+   
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+}
+@media (max-width:400px) {
+    .close {
+
+    top: 4%;
+    left: 79%;
+}
+
+
+    
+}
+@media (max-width:900px) {
+
+    .container {
+    max-width: 85%;
+   
+   
+}
+
+}
