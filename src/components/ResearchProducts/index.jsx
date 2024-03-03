@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import Result from "../Result/Result";
 import styles from './ResearchProduct.module.css';
+import {auth, db} from '../../firebase'
+import {  doc, setDoc, updateDoc,arrayUnion,getDoc,collection, query, where,getDocs, arrayRemove, FieldValue  } from "firebase/firestore";
+import { Tooltip } from 'react-tooltip'
+
+
+
+
 
 const ProductInfo = ({userData,ratings}) => {
 
@@ -16,11 +23,81 @@ const ProductInfo = ({userData,ratings}) => {
     const [prodNo, setProdNo] = useState(1);
     const [dataa, setDataa] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [showForm,setShowForm] = useState(true)
+    const [previousData, setPreviousData] = useState([]);
+    const [viewData, setViewData] = useState(false);
+    const [dataToView, setDataToView] = useState([]);      
+
+    const getPreviousData = async (email) => {
+            try {
+                const q = query(collection(db, 'researchProducts'),where('__name__', '==', email));
+                
+                const querySnapshot = await getDocs(q);
+                
+                const data = [];
+                querySnapshot.forEach((doc) => {
+                    data.push({  ...doc.data().savedData });
+                });
+                return data;
+            } catch (error) {
+                console.error('Error getting data by email: ', error);
+                return [];
+            }
+    };
+
+    const fetchData = async () => {
+            const newData = await getPreviousData(auth.currentUser?.email);
+            // const newData = await getPreviousData('a@e.com');
+            setPreviousData(newData)
+    };
+
+    useEffect(()=>{
+        fetchData();
+    },[])
 
     const handleModal = ()=>{
         setShowModal(!showModal)
     }
+
+    const handleHistory = ()=>{
+        setShowHistoryModal(!showHistoryModal)
+    }
+
+    const handleReuse = (item)=>{
+        setDataa(prevData => [...prevData, ...item]);
+        setShowHistoryModal(!showHistoryModal)
+
+    }
+
+    const handleView = (item)=>{
+        setDataToView(item)
+        setViewData(!viewData)
+
+    }
+
+    const handleDelete = async (itemIndex) => {
+        try {
+            const documentRef = doc(db, 'researchProducts',auth.currentUser?.email);
+            const snapshot = await getDoc(documentRef);
+            const documentData = snapshot.data();
+
+
+            // Construct a new array without the item to remove
+            const newData = documentData.savedData.filter((item, index) => index !== itemIndex);
+
+            // Update the document with the new array
+            await updateDoc(documentRef, {
+                savedData: newData
+            });
+
+            fetchData();
+        
+            console.log("done");
+        } catch (error) {
+            console.error('Error deleting item from savedData array: ', error);
+        }
+    };
 
     const resetProductFields = () => {
         setTitle("");
@@ -31,19 +108,45 @@ const ProductInfo = ({userData,ratings}) => {
     };
 
     const addResearchProduct =  () => {
-        if (!fName || !lName || !title || !authorList || !researchType || !publicationName || !publicationStatus) {
+        if (!fName || !lName || !title || !authorList || !researchType || !publicationName ) {
             alert("You must fill all fields.");
             return 0;
         }
 
+        if (researchType =="Peer-reviewed publication" && !publicationStatus ) {
+            alert("Please enter publication status.");
+            return 0;
+        }
+
+
+
+        // const authors = authorList.split(';').map(author => {
+        //     const [lastName, ...initials] = author.trim().split(','); 
+        //     const formattedInitials = initials.map(initial => initial.trim().toUpperCase()).join(', ');
+
+        //     return { lastName: lastName.trim(), initials: formattedInitials };
+        // });
+
+         
+
+        const authorRegex = /^[A-Za-z]+,[A-Za-z]+;([A-Za-z]+,[A-Za-z]+;)*$/;
+        
+        if (!authorRegex.test(authorList.trim())) {
+            alert("Input format should be firstName,lastName;firstName,lastName;...");
+            return; 
+        }
+
+        // Proceed with parsing the valid authors
         const authors = authorList.split(';').map(author => {
-            const [lastName, ...initials] = author.trim().split(','); 
-            const formattedInitials = initials.map(initial => initial.trim().toUpperCase()).join(', ');
+            const [firstName, lastName] = author.trim().split(',');
+            return { firstName, lastName };
+        }).filter(author => author.firstName !== '');
+        
+        
 
-            return { lastName: lastName.trim(), initials: formattedInitials };
-        });
+        const finalPublicationStatus = publicationStatus || '-';
 
-        setProd(prevProd => [...prevProd, { title, authors, researchType, publicationStatus, publicationName }]);
+        setProd(prevProd => [...prevProd, { title, authors, researchType, publicationStatus:finalPublicationStatus, publicationName }]);
         setProdNo(prevProdNo => prevProdNo + 1);
         resetProductFields();
     };
@@ -84,7 +187,42 @@ const ProductInfo = ({userData,ratings}) => {
 
     };
 
-    const calculateScore = () => {
+    const handleSaveData = async() => {
+        
+        const currentDate = new Date();
+
+        const researchData = {
+            dataa,
+            timestamp:currentDate
+        };
+
+
+        try {
+             
+        // Reference to the document for the current user
+        const userDocRef = doc(db, 'researchProducts', auth.currentUser?.email);
+
+      
+        // Check if the document exists
+        const docSnap = await getDoc(userDocRef);
+
+        if(docSnap.exists()){
+            await updateDoc(userDocRef,{
+                savedData: arrayUnion(researchData)
+            })
+        }else {
+            // If the document doesn't exist, create it and set the form data
+            await setDoc(userDocRef, { savedData: [researchData] });
+        }
+        
+        setShowForm(false);
+
+    } catch (error) {
+        console.error('Error saving form data: ', error);
+    }
+    };
+
+    const calculateScore =  () => {
         if (dataa.length === 0) {
             alert("You must add at least one student's data to calculate the score.");
             return;
@@ -95,7 +233,9 @@ const ProductInfo = ({userData,ratings}) => {
             return
         }
 
-        setShowForm(false)
+        handleSaveData()
+
+        // setShowForm(false)
     };
 
     const handleFileUpload = (e) => {
@@ -148,7 +288,23 @@ const ProductInfo = ({userData,ratings}) => {
                  <div className={styles.headerButtons}>
                     <button disabled onClick={() => document.getElementById('fileInput').click()}>Upload File</button>
                     <input id="fileInput" style={{display: 'none'}} type="file" accept=".xlsx" onChange={handleFileUpload} />
-                    <button onClick={handleModal}>View Data</button>
+                    <div className={styles.historyBtnDiv}>
+                    {/* <button onClick={handleModal}>View Data</button> */}
+                    <button onClick={handleModal} className={styles.historyBtn}
+                    data-tooltip-id="viewToolTip" data-tooltip-content="View Data"
+                    >
+                         <img src="./viewIcon.svg" alt="" />
+                    </button>
+                    <button onClick={handleHistory} className={styles.historyBtn}
+                    data-tooltip-id="historyToolTip" data-tooltip-content="View History"
+
+                    >
+                        <img src="./historyIcon.svg" alt="" />
+                    </button>
+                    <Tooltip id="viewToolTip" />
+                    <Tooltip id="historyToolTip" />
+
+                    </div>
                 </div>
                
                 <div className={styles.inputContainer}>
@@ -173,7 +329,7 @@ const ProductInfo = ({userData,ratings}) => {
                         <input type="text" placeholder='Title'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)} />
-                        <input type="text" placeholder='Author List (Last Name, First Initial, Middle Initial);'
+                        <input type="text" placeholder='Author List (First Name, Last Name;)'
                             value={authorList}
                             onChange={(e) => setAuthorList(e.target.value)} />
                         </div>
@@ -217,6 +373,7 @@ const ProductInfo = ({userData,ratings}) => {
                 </div>
             </div>
 
+            {/* Modal for view data */}
             <div className={styles.modal} style={{display:  `${showModal? "block":"none"}`}}>
                 <div className={styles.modalBody}>
                     <div>
@@ -226,7 +383,7 @@ const ProductInfo = ({userData,ratings}) => {
                     <div>
                     {dataa.map((user, index) => (
                         <div key={index}>
-                        <h2>{`${user.fName} ${user.lName}`}</h2>
+                        <h2>{index+1}. {`${user.fName} ${user.lName}`}</h2>
                         <div>
                             {user.researchProducts.map((product, productIndex) => (
                             <div key={productIndex}>
@@ -246,6 +403,116 @@ const ProductInfo = ({userData,ratings}) => {
                     :(
                     <div style={{textAlign:"center"}}>
                         <h3>No Data to display!</h3>
+                    </div>
+                    )}
+
+                </div>
+            </div>
+
+            {/* Modal for history */}
+            <div className={styles.modal} style={{display:  `${showHistoryModal? "block":"none"}`}}>
+                <div className={styles.modalBody}>
+                    <div>
+                        <span onClick={handleHistory} className={styles.close}>&times;</span>
+                    </div>
+                    {previousData.length>0 ?(
+                    <>
+                    {!viewData?(
+                        <div>
+                            <div>
+                                <div>
+                                    <h3 >Previous Student's Data </h3>
+                                </div>
+
+                                <hr style={{color:"#754B9C"}} />
+                            <div>
+                                <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                    <th >No.</th>
+                                    <th >Student Names </th>
+                                    <th >Date</th>
+                                    <th >Actions</th>
+                                    <th ></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {previousData.map((studentSet, index)=>(
+                                        Object.values(studentSet).map((student, idx)=>(
+                                             <tr key={idx}>
+                                                <td>{idx + 1}</td>
+                                                <td>
+                                                    <div className={styles.studentNames}>
+                                                        <select>
+                                                            {student.dataa.map((std1,indx)=>(
+                                                                <option key={indx}
+                                                                 >{std1.fName} {std1.lName}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td>{new Date(student.timestamp.seconds * 1000).toLocaleString()}</td>
+                                                 <td>
+                                                    <div className={styles.actionBtns}>
+                                                        <span style={{ backgroundColor: "#00cf61" }}
+                                                        onClick={()=>handleReuse(student.dataa)}
+                                                        >Reuse</span>
+                                                        <span style={{ backgroundColor: "#250096", color: "white" }}
+                                                        onClick={()=>handleView(student.dataa)}
+                                                        >View</span>
+                                                        <span onClick={() => handleDelete(idx)}>Delete</span>
+                                                    </div>
+                                                </td>
+                                             </tr>
+                                        ))
+                                    ))
+                                    }
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                    ):(
+                        <>
+                         <div>
+                                    <button onClick={()=>setViewData(false)} style={{backgroundColor:'transparent',border:"none",cursor:"pointer"}}>
+                                    <img src="./backIcon.svg" alt="" />
+
+                                    </button>
+                            </div>
+                            <hr style={{color:"#754B9C"}} />
+                            {dataToView.map((user, index) => (
+                           
+                           
+
+                            <div key={index}>
+                            <h2>{index+1}. {`${user.fName} ${user.lName}`}</h2>
+                            <div>
+                                {user.researchProducts.map((product, productIndex) => (
+                                <div key={productIndex}>
+                                    <h3>{product.title}</h3>
+                                    <p><strong>Research Type:</strong> {product.researchType}</p>
+                                    <p><strong>Publication Status:</strong> {product.publicationStatus}</p>
+                                    <p><strong>Publication Name:</strong> {product.publicationName}</p>
+                                    <p><strong>Authors:</strong> {product.authors.map((author, authorIndex) => (
+                                    <span key={authorIndex}>{author.lastName} {author.initials},</span>
+                                    ))}</p>
+                                </div>
+                                ))}
+                            </div>
+                            </div>
+                        
+                        ))}
+                        </>
+                        
+                    )}
+                      
+                    
+                    </>)
+                    :(
+                    <div style={{textAlign:"center"}}>
+                        <h3>No history found!</h3>
+                        
                     </div>
                     )}
 

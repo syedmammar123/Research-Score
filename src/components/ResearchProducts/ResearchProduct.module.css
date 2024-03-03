@@ -30,6 +30,79 @@
   
 }
 
+.historyBtn{
+    background-color: transparent !important;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+
+}
+
+.historyBtnDiv{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionBtns{
+    display: flex;
+     display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.actionBtns span{
+    width: 70px;
+    background: red;
+    border-radius: 5px;
+    padding: 3px 2px;
+    cursor: pointer;
+    color: white;
+}
+
+.table{
+    width: 100%;
+}
+
+.table thead tr th{
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2500966d !important;
+}
+
+
+
+.table tbody tr td{
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 500;
+    /* color: #454749 !important; */
+    padding-top: 15px ;
+    padding-bottom: 15px;
+
+}
+
+
+.studentNames  select {
+    width: 80%;
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin: 0px 0px;
+    background-color: transparent;
+    color: #250096;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+
+}
+
 
 
 
@@ -151,28 +224,65 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+
 @media (max-width:600px) {
     .close {
     top: 6%;
     left: 80%;
-}
+    }
 
     .container {
     max-width: 85%;
-   
     padding: 20px;
     margin-bottom: 30px;
+    }
+
+    
+  .table thead {
+        display: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 15px;
+        background-color:#caeaff53;
+        border-bottom: 2px solid rgba(255, 255, 0, 0.394) !important;
+
+    }
+
+    .table td {
+        text-align: left ;
+        padding: 5px !important;
+        border-bottom: 1px solid #ccc !important;
+    }
+    
+    .actionBtns{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    /* width: 100%; */
+    }
+
+    .actionBtns span{
+       margin-left: 0px;
 }
+
+
+
+
+
 
 }
 @media (max-width:400px) {
     .close {
-
-    top: 4%;
-    left: 79%;
-}
-
-
+        top: 4%;
+        left: 79%;
+    }
     
 }
 @media (max-width:900px) {

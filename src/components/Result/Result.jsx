@@ -857,447 +857,31 @@ import styles from './index.module.css';
 
 
 const Result = ( {userData,rating,stdData}) => {
-    const [loading, setLoading] = useState(true);
-//     stdData = [
-//     {
-//         "fName": "Taylor",
-//         "lName": "Morgan",
-//         "researchProducts": [
-//             {
-//                 "title": "Innovations in Minimally Invasive Techniques for Brain Tumor Removal",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Zhang",
-//                         "initials": "E"
-//                     },
-//                     {
-//                         "lastName": "Antonius",
-//                         "initials": "M"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Journal of Neurosurgical Techniques"
-//             },
-//             {
-//                 "title": "Neuroprotective Strategies in Acute Ischemic Stroke: A Comprehensive Review",
-//                 "authors": [
-//                     {
-//                         "lastName": "Turing",
-//                         "initials": "A"
-//                     },
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Stroke Research and Therapy"
-//             },
-//             {
-//                 "title": "The Role of AI in Predicting Outcomes After Spinal Cord Injury",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Connor",
-//                         "initials": "S"
-//                     }
-//                 ],
-//                 "researchType": "Non-peer reviewed publication",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "Innovations in Spinal Surgery and Rehabilitation"
-//             },
-//             {
-//                 "title": "3D Printing of Customized Cranial Implants: Future Directions",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Da Vinci",
-//                         "initials": "L"
-//                     },
-//                     {
-//                         "lastName": "Smith",
-//                         "initials": "J"
-//                     }
-//                 ],
-//                 "researchType": "Presentation",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "International Symposium on Biomedical Engineering"
-//             },
-//             {
-//                 "title": "Efficacy of Virtual Reality Training for Neurosurgical Residents",
-//                 "authors": [
-//                     {
-//                         "lastName": "Tesla",
-//                         "initials": "N"
-//                     },
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Submitted",
-//                 "publicationName": "Education in Neurosurgery"
-//             },
-//             {
-//                 "title": "Mechanisms of Neural Regeneration After Traumatic Brain Injury",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Curie",
-//                         "initials": "M"
-//                     },
-//                     {
-//                         "lastName": "Einstein",
-//                         "initials": "A"
-//                     }
-//                 ],
-//                 "researchType": "Abstract",
-//                 "publicationStatus": "Submitted",
-//                 "publicationName": "Neurotrauma Conference"
-//             },
-//             {
-//                 "title": "Comparative Analysis of Endoscopic vs. Microscopic Transsphenoidal Pituitary Surgery",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Newton",
-//                         "initials": "I"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "Journal of Pituitary Research"
-//             },
-//             {
-//                 "title": "The Impact of Socioeconomic Status on Outcomes in Pediatric Epilepsy Surgery",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Darwin",
-//                         "initials": "C"
-//                     },
-//                     {
-//                         "lastName": "Mendel",
-//                         "initials": "G"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Pediatric Neurosurgery"
-//             },
-//             {
-//                 "title": "Development of a New Intracranial Pressure Monitoring Device",
-//                 "authors": [
-//                     {
-//                         "lastName": "Morgan",
-//                         "initials": "T"
-//                     },
-//                     {
-//                         "lastName": "Bell",
-//                         "initials": "A"
-//                     },
-//                     {
-//                         "lastName": "Edison",
-//                         "initials": "T"
-//                     }
-//                 ],
-//                 "researchType": "Presentation",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "World Congress on Neurotechnology"
-//             }
-//         ]
-//     },
-//     {
-//         "fName": "Jamie",
-//         "lName": "Rivera",
-//         "researchProducts": [
-//             {
-//                 "title": "Evaluating the Accuracy of MRI in Diagnosing Early Stage Osteoarthritis",
-//                 "authors": [
-//                     {
-//                         "lastName": "Rivera",
-//                         "initials": "J"
-//                     },
-//                     {
-//                         "lastName": "Choi",
-//                         "initials": "S"
-//                     },
-//                     {
-//                         "lastName": "Patel",
-//                         "initials": "A"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Journal of Musculoskeletal Imaging"
-//             },
-//             {
-//                 "title": "Machine Learning Algorithms for Predicting Malignancy in Lung Nodule CT Scans",
-//                 "authors": [
-//                     {
-//                         "lastName": "Ford",
-//                         "initials": "H"
-//                     },
-//                     {
-//                         "lastName": "Rivera",
-//                         "initials": "J"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "Radiology and Artificial Intelligence"
-//             },
-//             {
-//                 "title": "The Role of Ultrasound in Managing Thyroid Disorders",
-//                 "authors": [
-//                     {
-//                         "lastName": "Rivera",
-//                         "initials": "J"
-//                     },
-//                     {
-//                         "lastName": "Blackwell",
-//                         "initials": "E"
-//                     }
-//                 ],
-//                 "researchType": "Presentation",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "International Thyroid Congress"
-//             },
-//             {
-//                 "title": "Impact of Regular Exercise on Cardiovascular Health: A Systematic Review",
-//                 "authors": [
-//                     {
-//                         "lastName": "Rivera",
-//                         "initials": "J"
-//                     },
-//                     {
-//                         "lastName": "Phelps",
-//                         "initials": "M"
-//                     },
-//                     {
-//                         "lastName": "Williams",
-//                         "initials": "S"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Submitted",
-//                 "publicationName": "Journal of Cardiovascular Medicine"
-//             },
-//             {
-//                 "title": "Advancements in PET Imaging for Early Detection of Alzheimer’s Disease",
-//                 "authors": [
-//                     {
-//                         "lastName": "Alzheimer",
-//                         "initials": "A"
-//                     },
-//                     {
-//                         "lastName": "Rivera",
-//                         "initials": "J"
-//                     }
-//                 ],
-//                 "researchType": "Non-peer reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Innovations in Neuroimaging"
-//             },
-//             {
-//                 "title": "A Comparative Study of Digital vs. Film Mammography in Breast Cancer Screening",
-//                 "authors": [
-//                     {
-//                         "lastName": "Rivera",
-//                         "initials": "J"
-//                     },
-//                     {
-//                         "lastName": "Curie",
-//                         "initials": "M"
-//                     },
-//                     {
-//                         "lastName": "Franklin",
-//                         "initials": "R"
-//                     }
-//                 ],
-//                 "researchType": "Abstract",
-//                 "publicationStatus": "Submitted",
-//                 "publicationName": "Annual Meeting of the Radiological Society"
-//             }
-//         ]
-//     },
-//     {
-//         "fName": "Casey",
-//         "lName": "Kim",
-//         "researchProducts": [
-//             {
-//                 "title": "Vaccine Efficacy in Preventing Viral Infections in School-Aged Children: A Meta-Analysis",
-//                 "authors": [
-//                     {
-//                         "lastName": "Kim",
-//                         "initials": "C"
-//                     },
-//                     {
-//                         "lastName": "Hernandez",
-//                         "initials": "L"
-//                     },
-//                     {
-//                         "lastName": "Ali",
-//                         "initials": "M"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Journal of Pediatric Infectious Diseases"
-//             },
-//             {
-//                 "title": "Impact of Screen Time on Sleep Patterns in Adolescents",
-//                 "authors": [
-//                     {
-//                         "lastName": "Yu",
-//                         "initials": "R"
-//                     },
-//                     {
-//                         "lastName": "Kim",
-//                         "initials": "C"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "Pediatric Sleep Medicine"
-//             },
-//             {
-//                 "title": "Nutritional Deficiencies and Developmental Delays in Early Childhood: A Systematic Review",
-//                 "authors": [
-//                     {
-//                         "lastName": "Kim",
-//                         "initials": "C"
-//                     },
-//                     {
-//                         "lastName": "Patel",
-//                         "initials": "A"
-//                     }
-//                 ],
-//                 "researchType": "Presentation",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "International Conference on Child Nutrition and Development"
-//             },
-//             {
-//                 "title": "Exploring the Psychological Impact of Pediatric Chronic Illnesses on Families",
-//                 "authors": [
-//                     {
-//                         "lastName": "Kim",
-//                         "initials": "C"
-//                     },
-//                     {
-//                         "lastName": "Lee",
-//                         "initials": "S"
-//                     },
-//                     {
-//                         "lastName": "Kim",
-//                         "initials": "J"
-//                     }
-//                 ],
-//                 "researchType": "Abstract",
-//                 "publicationStatus": "Submitted",
-//                 "publicationName": "World Congress on Pediatric Psychology"
-//             }
-//         ]
-//     },
-//     {
-//         "fName": "Alex",
-//         "lName": "Parker",
-//         "researchProducts": [
-//             {
-//                 "title": "The Efficacy of New Anticoagulants in the Management of Atrial Fibrillation",
-//                 "authors": [
-//                     {
-//                         "lastName": "Parker",
-//                         "initials": "A"
-//                     },
-//                     {
-//                         "lastName": "Singh",
-//                         "initials": "H"
-//                     },
-//                     {
-//                         "lastName": "Rodriguez",
-//                         "initials": "E"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Published",
-//                 "publicationName": "Journal of Cardiovascular Pharmacology"
-//             },
-//             {
-//                 "title": "Assessing the Impact of Lifestyle Modifications on Hypertension Control: A Cohort Study",
-//                 "authors": [
-//                     {
-//                         "lastName": "Johnson",
-//                         "initials": "M"
-//                     },
-//                     {
-//                         "lastName": "Parker",
-//                         "initials": "A"
-//                     }
-//                 ],
-//                 "researchType": "Peer-reviewed publication",
-//                 "publicationStatus": "Accepted",
-//                 "publicationName": "Internal Medicine Insights"
-//             }
-//         ]
-//     }
-// ];
-
-
-
+  const [loading, setLoading] = useState(true);
 
   const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_KEY,
   dangerouslyAllowBrowser: true
-});
-
+  });
 
   const [result,setResult] = useState([])
-  const [result1,setResult1] = useState([{
-        name:"Ammar",score:20
-      },{
-        name:"Ammar",score:20
-      },{
-        name:"Ammar",score:20
-      }
-  ])
 
   const [resData,setResData] = useState([])
   // var userSpecialty = "Anesthesiology"
   var userSpecialty = userData.specialty
 
-  const countFirstName = (lname,products)=>{
+  const countFirstName = (fName,products)=>{
     let count = 0
     
     for(let i = 0; i<products.length ;i++){
       let authorList = products[i].authors
 
-      if(lname===authorList[0].lastName){
+      if(fName===authorList[0].firstName){
         count++;
       }
     }
+
+    console.log(count)
     return count;
   }
 
@@ -1423,10 +1007,11 @@ const Result = ( {userData,rating,stdData}) => {
       score = currentStd.researchProducts.length * (rating.totalNumberOfResearchProducts);
 
       //b
-      // let specialtyCount = await countSpecialty(userSpecialty,currentStd.researchProducts)
-      // score += specialtyCount * (rating.researchRelatesToSpecialty)
+    //   let specialtyCount = await countSpecialty(userSpecialty,currentStd.researchProducts)
+    //   score += specialtyCount * (rating.researchRelatesToSpecialty)
+
       //c
-      let fNameCount = countFirstName(currentStd.lName,currentStd.researchProducts)
+      let fNameCount = countFirstName(currentStd.fName,currentStd.researchProducts)
       score += fNameCount * (rating.firstAuthorOnProject)
 
       //d 
@@ -1444,6 +1029,7 @@ const Result = ( {userData,rating,stdData}) => {
       //g
       // let impactFactorCount = countImpact(currentStd.researchProducts)
       // score += impactFactorCount * (rating.impactFactorOfJournals/totalRating)
+      
       let final = {
         name:currentStd.fName+" "+currentStd.lName,
         score
