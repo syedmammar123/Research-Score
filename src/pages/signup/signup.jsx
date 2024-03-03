@@ -8,6 +8,7 @@ import styles from './index.module.css';
 const SignUp = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [password1, setPassword1] = useState("")
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
     
@@ -38,6 +39,12 @@ const onButtonClick = async (e) => {
         if (password.length < 6) {
             setPasswordError("The password must be 6 characters or longer")
             return
+        }
+
+        if(password!==password1){
+            setPasswordError("The passwords doesnot match!")
+            return
+
         }
 
         try {
@@ -72,10 +79,21 @@ const onButtonClick = async (e) => {
         <div className={styles.inputContainer}>
             <input
                 value={password}
-                placeholder="Enter your password here"
+                placeholder="Enter your password"
+                type="password"
                 onChange={ev => setPassword(ev.target.value)}
                 className={styles.inputBox} />
             <label className={styles.errorLabel}>{passwordError}</label>
+        </div>
+        <br />
+        <div className={styles.inputContainer}>
+            <input
+                value={password1}
+                placeholder="Re-enter your password"
+                type="password"
+                onChange={ev => setPassword1(ev.target.value)}
+                className={styles.inputBox} />
+            {/* <label className={styles.errorLabel}>{passwordError}</label> */}
         </div>
         <br />
         <div className={styles.inputContainer}>
