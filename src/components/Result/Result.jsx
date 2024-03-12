@@ -17,7 +17,6 @@ const Result = ( {userData,rating,stdData}) => {
   apiKey: import.meta.env.VITE_OPENAI_KEY,
   dangerouslyAllowBrowser: true
   });
-  console.log(import.meta.env.VITE_OPENAI_KEY)
 
   // var userSpecialty = "Anesthesiology"
   // var userSpecialty = "Neurology"
