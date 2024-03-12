@@ -360,7 +360,7 @@ const ProductInfo = ({userData,ratings}) => {
                         <input type="text" placeholder='Title'
                             value={title}
                             onChange={(e) => setTitle(e.target.value)} />
-                        <input type="text" placeholder='Author List (First Name, Last Name;)'
+                        <input type="text" placeholder='Author List (First Author; Second Author; ... ;)'
                             value={authorList}
                             onChange={(e) => setAuthorList(e.target.value)} />
                         </div>
