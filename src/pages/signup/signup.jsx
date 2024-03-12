@@ -49,7 +49,6 @@ const onButtonClick = async (e) => {
 
         try {
             const userCredentials = await createUserWithEmailAndPassword(auth,email,password)
-            console.log(userCredentials);
             const user = userCredentials.user;
             localStorage.setItem('token',user.accessToken)
             localStorage.setItem('user',JSON.stringify(user));

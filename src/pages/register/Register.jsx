@@ -30,7 +30,6 @@ const Register = (props) => {
 
             if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data();
-                console.log('User Data:', userData);
                 navigate('/');
             } else {
                 // navigate('/');

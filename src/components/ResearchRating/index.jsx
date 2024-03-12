@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductInfo from '../ResearchProducts';
 import styles from './index.module.css';
+import {auth, db} from '../../firebase'
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+
 
 
 const ResearchRatingComponent = ({userData}) => {
@@ -24,10 +27,54 @@ const ResearchRatingComponent = ({userData}) => {
         }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        try {
+        // Reference to the document for the current user
+        const userDocRef = doc(db, 'ratings', auth.currentUser?.email);
+
+        // Check if the document exists
+        const docSnap = await getDoc(userDocRef);
+
+        if(docSnap.exists()){
+            await updateDoc(userDocRef,
+                ratings
+            )
+        }else {
+            // If the document doesn't exist, create it and set the form data
+            await setDoc(userDocRef, ratings);
+        }
+        
         setShowRatingComp(false)  
+
+    } catch (error) {
+        console.error('Error saving ratings: ', error);
+        alert(error.message)
+    }
     };
+
+    const fetchData = async () => {
+        try {
+          const q = query(collection(db, 'ratings'),where('__name__', '==', auth.currentUser?.email));
+          
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+                const userData = querySnapshot.docs[0].data();
+                setRatings(userData)
+          } else {
+            //do nothing.
+          } 
+          
+        }catch (error) {
+          console.error('Error getting ratings: ', error);
+          alert(error.message)
+        }                
+    };
+    
+    useEffect(() => {
+      fetchData()
+    }, []);
+
 
 return (
     <>{
@@ -244,4 +291,3 @@ return (
 };
 
 export default ResearchRatingComponent;
-

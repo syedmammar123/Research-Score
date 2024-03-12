@@ -34,14 +34,9 @@ const onButtonClick = async (e) => {
             return
         }
 
-        // if (password.length < 7) {
-        //     setPasswordError("The password must be 8 characters or longer")
-        //     return
-        // }
-
+      
         try {
             const userCredentials = await signInWithEmailAndPassword(auth,email,password)
-            console.log(userCredentials);
             const user = userCredentials.user;
             localStorage.setItem('token',user.accessToken)
             localStorage.setItem('token',JSON.stringify(user));
@@ -49,8 +44,6 @@ const onButtonClick = async (e) => {
             
         } catch (error) {
             setEmailError(error.message)
-            // alert("Invalid Credentials!")
-            // console.error(error)
         }      
 
 }

@@ -1,37 +1,42 @@
 import React, { useState } from 'react'
+import {impactData} from '../components/Result/ImpactFactor'
 
 const test = () => {
-  const [data,setData] = useState([])
-  const [name,setName] = useState()
-  const [subject,setSubject] = useState()
+  const [search,setSearch] = useState('')
+  const [searchRes,setSearchRes] = useState('')
+  
+  const handleSearch = () => {
+  let highestIF = -Infinity;
+  let found = false;
 
-
-  const addStd = ()=>{
-
+  for (let i = 0; i < impactData.length; i++) {
+    const data = impactData[i];
+    const dataLower = data['Journal name'].toLowerCase();
+    
+    if (dataLower === search.toLowerCase()) {
+      found = true;
+      const jif = data['2022 JIF'];
+      if (jif > highestIF) {
+        highestIF = jif;
+      }
+    }
   }
 
-  const addSub = ()=>{
+  if (found) {
+    setSearchRes(highestIF);
+  } else {
+    setSearchRes(`Sorry, no journal named "${search}" found`);
   }
-
-  const submit = ()=>{
-    console.log(data)
-  }
-
+}
   return (
     <div>
-      <div>Name
-        <input type="text" name="" id="" onChange={(e)=>setName(e.target.value)}/>
-      </div>
-      <div>subject
-        <input type="text" name="" id=""  onChange={(e)=>setSubject(e.target.value)} />
-        <button onClick={addSub}>Add Subject</button>
-      </div>
+      <input type="text" name="" id="" value={search} onChange={(e)=>setSearch(e.target.value)} />
+      <button onClick={handleSearch}>
+        search
+      </button>
+
       <div>
-        <button onClick={addStd}>Add Student</button>
-      </div>
-      <br /><br />
-      <div>
-        <button onClick={submit}>submit</button>
+        {searchRes}
       </div>
     </div>
   )
