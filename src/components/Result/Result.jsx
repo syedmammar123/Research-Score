@@ -18,7 +18,7 @@ const Result = ( {userData,rating,stdData}) => {
   dangerouslyAllowBrowser: true
   });
 
-  // var userSpecialty = "Anesthesiology"
+  var userSpecialty = "Radiology"
   // var userSpecialty = "Neurology"
 
   const countFirstName1 = (fName,lName,products)=>{
@@ -89,8 +89,9 @@ const Result = ( {userData,rating,stdData}) => {
     let authorList = []
     
     for(let i = 0; i<products.length; i++){
-      authorList.push(products[i].authors)
+      authorList.push(products[i].authors[0])
     }
+    console.log(authorList)
     
     const message = await openai.beta.threads.messages.create(
       import.meta.env.VITE_THREAD_ID_2,
@@ -187,30 +188,42 @@ const Result = ( {userData,rating,stdData}) => {
     
   const countImpact = (products) => {
     let count = 0; 
+    let totalPeerReviewed = 0; 
     
     for(let i = 0; i < products.length; i++) {
-      const journalName = products[i].publicationName;
-      const impactFactor = searchImpact(journalName);
+      if(products[i].researchType==="Peer-reviewed publication"){
+        
+        totalPeerReviewed++;
+          
+        const journalName = products[i].publicationName;
+        const impactFactor = searchImpact(journalName);
 
-      if (impactFactor !== null) {
-        if (impactFactor >= 0.1 && impactFactor <= 2.0) {
-          count += 1;
-        } else if (impactFactor >= 2.1 && impactFactor <= 4.0) {
-          count += 2;
-        } else if (impactFactor >= 4.1 && impactFactor <= 6.0) {
-          count += 3;
-        } else if (impactFactor >= 6.1 && impactFactor <= 10.0) {
-          count += 4;
-        } else if (impactFactor >= 10.1) {
-          count += 5;
+        if (impactFactor !== null) {
+          if (impactFactor >= 0.1 && impactFactor <= 2.0) {
+            count += 1;
+          } else if (impactFactor >= 2.1 && impactFactor <= 4.0) {
+            count += 2;
+          } else if (impactFactor >= 4.1 && impactFactor <= 6.0) {
+            count += 3;
+          } else if (impactFactor >= 6.1 && impactFactor <= 10.0) {
+            count += 4;
+          } else if (impactFactor >= 10.1) {
+            count += 5;
+          }
+        } else {
+          count += 1.5;
         }
-      } else {
-        count += 1.5;
 
       }
     }
-    console.log(`for impact factor: ${count}`);
 
+    if (totalPeerReviewed === 0) {
+      console.log("No peer-reviewed products found.");
+      console.log(`For impact factor: ${count}`);
+    } else {
+      count = count / totalPeerReviewed;
+      console.log(`For impact factor: ${count}`);
+    }
     return count;
   }
 
