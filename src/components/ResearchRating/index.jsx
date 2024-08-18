@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import ProductInfo from '../ResearchProducts';
 import styles from './index.module.css';
 import {auth, db} from '../../firebase'
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import {  collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { Tooltip } from 'react-tooltip'
+import CheckboxGroup from '../AttributesCheckBox/attributeCheckBox';
 
 
 
 const ResearchRatingComponent = ({userData}) => {
     const [showRatingComp,setShowRatingComp] = useState(true)
+    const [showModal, setShowModal] = useState(false);
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+
+
 
     const [ratings, setRatings] = useState({
         totalNumberOfResearchProducts: 0,
@@ -27,7 +33,16 @@ const ResearchRatingComponent = ({userData}) => {
         }));
     };
 
+    const handleCheckboxSelectionChange = (checkedItems) => {
+    setSelectedCheckboxes(checkedItems);
+    };
+
+    const handleModal = ()=>{
+        setShowModal(!showModal)
+    }
+
     const handleSubmit = async (event) => {
+      console.log(ratings)
         event.preventDefault();
         try {
         // Reference to the document for the current user
@@ -81,35 +96,63 @@ return (
       showRatingComp ? (
 
         <form onSubmit={handleSubmit} className={styles.mainContainer}>
-        <div className={styles.container} >
-           
-          <label>
-            A. Total Number of Research Products:
-            <input
-                type="number"
+
+        
+          {/* add more options */}
+          <div className={styles.modal} style={{display:`${showModal? "block":"none"}`}}>
+              <div className={styles.modalBody}>
+                  <div>
+                      <span onClick={handleModal} className={styles.close}>&times;</span>
+                  </div>
+                  <CheckboxGroup onSelectionChange={handleCheckboxSelectionChange} />
+
+                  
+                  {/* <div style={{textAlign:"center"}}>
+
+                      <h3>No Data to display!</h3>
+                  </div> */}
+
+              </div>
+          </div>
+          <div className={styles.addButtonDiv}>
+            <button
+            type="button"
+            onClick={handleModal} className={styles.addButton}
+            data-tooltip-id="viewToolTip" data-tooltip-content="Add more attributes"
+            >
+            <img src="./addIcon.svg" alt="" />
+            </button>
+           <Tooltip id="viewToolTip" />
+          </div>
+         
+          
+          <div className={styles.container} >
+            
+            <label>
+              A. Total Number of Research Products:
+              <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  step={0.1}
+                  value={ratings.totalNumberOfResearchProducts}
+                  onChange={(event) => handleRatingChange(event, 'totalNumberOfResearchProducts')}
+                  />
+              <div>
+              <input
+                type="range"
                 min={0}
                 max={10}
                 step={0.1}
                 value={ratings.totalNumberOfResearchProducts}
                 onChange={(event) => handleRatingChange(event, 'totalNumberOfResearchProducts')}
-                />
-            <div>
-            <input
-              type="range"
-              min={0}
-              max={10}
-              step={0.1}
-              value={ratings.totalNumberOfResearchProducts}
-              onChange={(event) => handleRatingChange(event, 'totalNumberOfResearchProducts')}
-            />
+              />
+                
+              </div>
               
-            </div>
-            
-   
-          </label>
-        </div>
-        
-
+    
+            </label>
+          </div>     
 
           <div className={styles.container} >
             <label >
@@ -273,6 +316,8 @@ return (
               
             </label>
           </div>
+
+           
 
           <button type="submit"  className={styles.submitButton}>Submit Ratings</button>
         </form>

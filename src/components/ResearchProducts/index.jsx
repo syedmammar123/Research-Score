@@ -185,6 +185,7 @@ const ProductInfo = ({userData,ratings}) => {
 
     const handleSaveData = async(item) => {
         
+        
         const currentDate = new Date();
 
         const researchData = {
@@ -254,6 +255,7 @@ const ProductInfo = ({userData,ratings}) => {
     };
 
     const calculateScore =  () => {
+        console.log(dataa)
         if (dataa.length === 0) {
             alert("You must add at least one student's data to calculate the score.");
             return;
