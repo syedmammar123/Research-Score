@@ -93,7 +93,7 @@ const ResearchRatingComponent = ({userData}) => {
 
 return (
     <>{
-      showRatingComp ? (
+      !showRatingComp ? (
 
         <form onSubmit={handleSubmit} className={styles.mainContainer}>
 
@@ -325,7 +325,7 @@ return (
 
       ):(
      <>
-        <ProductInfo userData={userData} ratings={ratings}  />
+        <ProductInfo userData={userData} ratings={ratings} characteristics={selectedCheckboxes}  />
      </>
       )
       }

@@ -3,14 +3,14 @@ import * as XLSX from 'xlsx';
 import Result from "../Result/Result";
 import styles from './ResearchProduct.module.css';
 import {auth, db} from '../../firebase'
-import {  doc, setDoc, updateDoc,arrayUnion,getDoc,collection, query, where,getDocs, arrayRemove, FieldValue  } from "firebase/firestore";
+import {  doc, setDoc, updateDoc,arrayUnion,getDoc,collection, query, where,getDocs   } from "firebase/firestore";
 import { Tooltip } from 'react-tooltip'
 
 
 
 
 
-const ProductInfo = ({userData,ratings}) => {
+const ProductInfo = ({userData,ratings,characteristics}) => {
 
     const [fName, setFName] = useState("");
     const [lName, setLName] = useState("");
@@ -24,10 +24,25 @@ const ProductInfo = ({userData,ratings}) => {
     const [dataa, setDataa] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [showLorModal, setShowLorModal] = useState(false);
+    const [showSopModal, setShowSopModal] = useState(false);
     const [showForm,setShowForm] = useState(true)
     const [previousData, setPreviousData] = useState([]);
     const [viewData, setViewData] = useState(false);
-    const [dataToView, setDataToView] = useState([]);      
+    const [dataToView, setDataToView] = useState([]);    
+    
+    const [currentSop, setCurrentSop] = useState("");
+    const [currentLors, setCurrentLors] = useState([""]);
+
+    const handleLorChange = (e, index) => {
+        const updatedLors = [...currentLors];
+        updatedLors[index] = e.target.value;
+        setCurrentLors(updatedLors);
+    };
+
+    const addAnotherLor = () => {
+        setCurrentLors([...currentLors, ""]);
+    };
 
     const getPreviousData = async (email) => {
             try {
@@ -63,6 +78,14 @@ const ProductInfo = ({userData,ratings}) => {
     const handleHistory = ()=>{
         // fetchData()
         setShowHistoryModal(!showHistoryModal)
+    }
+
+    const handleLor = ()=>{
+        setShowLorModal(!showLorModal)
+    }
+
+    const handleSop = ()=>{
+        setShowSopModal(!showSopModal)
     }
 
     const handleReuse = (item)=>{
@@ -164,60 +187,77 @@ const ProductInfo = ({userData,ratings}) => {
             setResearchType("")
         }
 
-        setDataa(prevDataa => [
-            ...prevDataa,
-            { fName, lName, researchProducts: [...prod] }
-        ]);
+        // setDataa(prevDataa => [
+        //     ...prevDataa,
+        //     { fName, lName, researchProducts: [...prod] }
+        // ]);
 
 
      
-        const item = { fName, lName, researchProducts: [...prod] }
+        // const item = { fName, lName, researchProducts: [...prod] }
 
-        handleSaveData(item)
+        // handleSaveData(item)
+         const studentData = {
+            fName,
+            lName,
+            researchProducts: [...prod],
+            sop: currentSop,
+            lors: currentLors
+        };
+
+        setDataa(prevDataa => [...prevDataa, studentData]);
+
+        handleSaveData(studentData);
+
 
         setProdNo(1);
         setProd([]);
         setFName("");
         setLName("");
         resetProductFields();
+        setCurrentSop(""); // Reset SOP
+        setCurrentLors([""]); // Reset LORs
 
     };
 
-    const handleSaveData = async(item) => {
+    const handleSaveData = (studentData) => {
+        console.log("Saving data:", studentData);
+    };
+    // const handleSaveData = async(studentData) => {
+        //console.log("Saving data:", studentData);
         
-        
-        const currentDate = new Date();
+    //     const currentDate = new Date();
 
-        const researchData = {
-            dataa:[item],
-            timestamp:currentDate
-        };
+    //     const researchData = {
+    //         dataa:[studentData],
+    //         timestamp:currentDate
+    //     };
 
 
-        try {
+    //     try {
              
-        // Reference to the document for the current user
-        const userDocRef = doc(db, 'researchProducts', auth.currentUser?.email);
+    //     // Reference to the document for the current user
+    //     const userDocRef = doc(db, 'researchProducts', auth.currentUser?.email);
 
       
-        // Check if the document exists
-        const docSnap = await getDoc(userDocRef);
+    //     // Check if the document exists
+    //     const docSnap = await getDoc(userDocRef);
 
-        if(docSnap.exists()){
-            await updateDoc(userDocRef,{
-                savedData: arrayUnion(researchData)
-            })
-        }else {
-            // If the document doesn't exist, create it and set the form data
-            await setDoc(userDocRef, { savedData: [researchData] });
-        }
+    //     if(docSnap.exists()){
+    //         await updateDoc(userDocRef,{
+    //             savedData: arrayUnion(researchData)
+    //         })
+    //     }else {
+    //         // If the document doesn't exist, create it and set the form data
+    //         await setDoc(userDocRef, { savedData: [researchData] });
+    //     }
         
-        // setShowForm(false);
+    //     // setShowForm(false);
 
-    } catch (error) {
-        console.error('Error saving form data: ', error);
-    }
-    };
+    // } catch (error) {
+    //     console.error('Error saving form data: ', error);
+    // }
+    // };
 
     const handleSaveDataSession = async() => {
         
@@ -268,7 +308,7 @@ const ProductInfo = ({userData,ratings}) => {
 
         // handleSaveDataSession()
 
-        setShowForm(false) //this should be commented if storing a session.
+        // setShowForm(false) //this should be commented if storing a session.
     };
 
     const handleFileUpload = (e) => {
@@ -313,20 +353,27 @@ const ProductInfo = ({userData,ratings}) => {
         reader.readAsBinaryString(file);
     };
 
+
     return (
         <>
         {showForm?(
             <>
             <div className={styles.container}>
                  <div className={styles.headerButtons}>
-                    <button disabled onClick={() => document.getElementById('fileInput').click()}>Upload File</button>
+                    <div style={{display:'flex',gap:10}}>
+                    <button onClick={handleLor}>Add LORs</button>
+                    <button onClick={handleSop}>Add SOP</button>
+
+                    </div>
+                    
+                    {/* <button disabled onClick={() => document.getElementById('fileInput').click()}>Upload File</button> */}
                     <input id="fileInput" style={{display: 'none'}} type="file" accept=".xlsx" onChange={handleFileUpload} />
                     <div className={styles.historyBtnDiv}>
                     {/* <button onClick={handleModal}>View Data</button> */}
                     <button onClick={handleModal} className={styles.historyBtn}
                     data-tooltip-id="viewToolTip" data-tooltip-content="View Data"
                     >
-                         <img src="./viewIcon.svg" alt="" />
+                        <img src="./viewIcon.svg" alt="" />
                     </button>
                     <button onClick={handleHistory} className={styles.historyBtn}
                     data-tooltip-id="historyToolTip" data-tooltip-content="View History"
@@ -405,6 +452,58 @@ const ProductInfo = ({userData,ratings}) => {
                     <button className={styles.button} onClick={calculateScore} >Calculate Score</button>
                 </div>
             </div>
+
+            {/* Modal for add LORs */}
+           <div className={styles.modal} style={{ display: `${showLorModal ? "block" : "none"}` }}>
+                <div className={styles.modalBody}>
+                    <div>
+                        <span onClick={handleLor} className={styles.close}>&times;</span>
+                    </div>
+                    <br />
+                    <br />
+                    <div>
+                        {currentLors.map((lor, index) => (
+                            <textarea
+                                key={index}
+                                value={lor}
+                                onChange={(e) => handleLorChange(e, index)}
+                                placeholder={`LOR #${index + 1}`}
+                                className={styles.textAreaInput}
+                            />
+                        ))}
+                    </div>
+                    <button onClick={addAnotherLor} 
+                        className={styles.addButton}   
+                        style={{margin:"8px 0"}}                
+                    >
+                        Add Another LOR 
+                    </button>
+                </div>
+            </div>
+
+
+            {/* Modal for add SOP */}
+           <div className={styles.modal} style={{ display: `${showSopModal ? "block" : "none"}` }}>
+                <div className={styles.modalBody}>
+                    <div>
+                        <span onClick={handleSop} className={styles.close}>&times;</span>
+                    </div>
+                    <br />
+                    <div style={{ textAlign: "center" }}>
+                        <h3>
+                            <textarea
+                                // type="text"
+                                rows={20}
+                                value={currentSop}
+                                onChange={(e) => setCurrentSop(e.target.value)}
+                                placeholder="Enter SOP"
+                                className={styles.textAreaInput}
+                            />
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
 
             {/* Modal for view data */}
             <div className={styles.modal} style={{display:  `${showModal? "block":"none"}`}}>
@@ -565,7 +664,7 @@ const ProductInfo = ({userData,ratings}) => {
             </>
             ):
             <>
-                <Result userData={userData} rating={ratings} stdData={dataa} />
+                <Result userData={userData} rating={ratings} stdData={dataa} characteristics={characteristics} />
             </>}
         </>
     );

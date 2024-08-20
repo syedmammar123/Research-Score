@@ -46,6 +46,24 @@
     justify-content: center;
 }
 
+.textAreaInput {
+    width: 100%;
+    /* max-width: 400px; */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    /* height: 420px; */
+}
+
+.textAreaInput:focus {
+    border-color: #007bff;
+    box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
 .actionBtns{
     display: flex;
      display: flex;

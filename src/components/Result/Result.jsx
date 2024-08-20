@@ -5,7 +5,7 @@ import styles from './index.module.css';
 import { impactData } from "./ImpactFactor";
 
 
-const Result = ( {userData,rating,stdData}) => {
+const Result = ( {userData,rating,stdData,characteristics}) => {
   const [loading, setLoading] = useState(true);
   const [result,setResult] = useState([])
   const [resData,setResData] = useState([])
