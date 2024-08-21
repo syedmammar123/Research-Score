@@ -22,7 +22,8 @@ const ResearchRatingComponent = ({userData}) => {
         peerReviewedJournalArticles: 0,
         abstractResearch: 0,
         publishedResearch: 0,
-        impactFactorOfJournals: 0
+        impactFactorOfJournals: 0,
+        
     });
 
     const handleRatingChange = (event, characteristic) => {
@@ -34,7 +35,7 @@ const ResearchRatingComponent = ({userData}) => {
     };
 
     const handleCheckboxSelectionChange = (checkedItems) => {
-    setSelectedCheckboxes(checkedItems);
+      setSelectedCheckboxes(checkedItems);
     };
 
     const handleModal = ()=>{
@@ -45,6 +46,8 @@ const ResearchRatingComponent = ({userData}) => {
       console.log(ratings)
         event.preventDefault();
         try {
+        const newRatings = {...ratings,selectedCheckboxes }
+
         // Reference to the document for the current user
         const userDocRef = doc(db, 'ratings', auth.currentUser?.email);
 
@@ -53,12 +56,14 @@ const ResearchRatingComponent = ({userData}) => {
 
         if(docSnap.exists()){
             await updateDoc(userDocRef,
-                ratings
+                newRatings
             )
         }else {
             // If the document doesn't exist, create it and set the form data
-            await setDoc(userDocRef, ratings);
+            await setDoc(userDocRef, newRatings);
         }
+
+        setRatings(newRatings);
         
         setShowRatingComp(false)  
 
@@ -76,6 +81,7 @@ const ResearchRatingComponent = ({userData}) => {
           if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data();
                 setRatings(userData)
+                setSelectedCheckboxes(userData.selectedCheckboxes || []);
           } else {
             //do nothing.
           } 
@@ -93,7 +99,7 @@ const ResearchRatingComponent = ({userData}) => {
 
 return (
     <>{
-      !showRatingComp ? (
+      showRatingComp ? (
 
         <form onSubmit={handleSubmit} className={styles.mainContainer}>
 
@@ -104,7 +110,7 @@ return (
                   <div>
                       <span onClick={handleModal} className={styles.close}>&times;</span>
                   </div>
-                  <CheckboxGroup onSelectionChange={handleCheckboxSelectionChange} />
+                  <CheckboxGroup selectedItems={selectedCheckboxes} onSelectionChange={handleCheckboxSelectionChange} />
 
                   
                   {/* <div style={{textAlign:"center"}}>
@@ -325,7 +331,7 @@ return (
 
       ):(
      <>
-        <ProductInfo userData={userData} ratings={ratings} characteristics={selectedCheckboxes}  />
+        <ProductInfo userData={userData} ratings={ratings}  />
      </>
       )
       }

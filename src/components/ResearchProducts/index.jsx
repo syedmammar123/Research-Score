@@ -753,7 +753,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
             </>
             ):
             <>
-                <Result userData={userData} rating={ratings} stdData={dataa} characteristics={characteristics} />
+                <Result userData={userData} rating={ratings} stdData={dataa} />
             </>}
         </>
     );

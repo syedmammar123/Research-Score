@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import styles from './CheckboxGroup.module.css';
 
-const CheckboxGroup = ({ onSelectionChange }) => {
+const CheckboxGroup = ({ selectedItems,onSelectionChange }) => {
   const [checkedItems, setCheckedItems] = useState([]);
+
+  useEffect(() => {
+    setCheckedItems(selectedItems);
+  }, [selectedItems]);
 
   const items = [
     "Compassionate", "Empathetic", "Patient", "Detail-oriented", "Dependable",
@@ -44,6 +48,7 @@ const CheckboxGroup = ({ onSelectionChange }) => {
           <input
             type="checkbox"
             value={item}
+            checked={checkedItems.includes(item)}
             onChange={handleCheckboxChange}
           />
           {index+1}. {item}
