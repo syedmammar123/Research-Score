@@ -5,12 +5,14 @@ import styles from './ResearchProduct.module.css';
 import {auth, db} from '../../firebase'
 import {  doc, setDoc, updateDoc,arrayUnion,getDoc,collection, query, where,getDocs   } from "firebase/firestore";
 import { Tooltip } from 'react-tooltip'
+import UploadStudentImage from '../UploadStudentImage';
 
 
 
 
 
 const ProductInfo = ({userData,ratings,characteristics}) => {
+    const blankPictureUrl = "https://firebasestorage.googleapis.com/v0/b/research-score.appspot.com/o/StudentImages%2Fblank.png6e9ea3e7-bf46-4223-b7eb-4d2b91e9facd?alt=media&token=fdd192b3-3d36-40e1-b738-84de9597e338"
 
     const [fName, setFName] = useState("");
     const [lName, setLName] = useState("");
@@ -26,6 +28,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [showLorModal, setShowLorModal] = useState(false);
     const [showSopModal, setShowSopModal] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false);
     const [showForm,setShowForm] = useState(true)
     const [previousData, setPreviousData] = useState([]);
     const [viewData, setViewData] = useState(false);
@@ -33,6 +36,14 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
     
     const [currentSop, setCurrentSop] = useState("");
     const [currentLors, setCurrentLors] = useState([""]);
+    
+    const [currentStudentPhoto, setCurrentStudentPhoto] = useState(blankPictureUrl);
+    const [currentDob, setCurrentDob] = useState();
+    const [currentCollegeName, setCurrentCollegeName] = useState();
+
+    
+
+    
 
     const handleLorChange = (e, index) => {
         const updatedLors = [...currentLors];
@@ -86,6 +97,14 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
 
     const handleSop = ()=>{
         setShowSopModal(!showSopModal)
+    }
+
+    const handleInfo = ()=>{
+        setShowInfoModal(!showInfoModal)
+    }
+
+    const handleImageUpload = (url)=>{
+        setCurrentStudentPhoto(url)
     }
 
     const handleReuse = (item)=>{
@@ -187,6 +206,17 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
             setResearchType("")
         }
 
+        if(!currentCollegeName){
+            alert("Please add college name of the current student")
+            return
+        }
+        if(!currentDob){
+            alert("Please add DOB of the current student")  
+            return         
+        }
+
+        
+
         // setDataa(prevDataa => [
         //     ...prevDataa,
         //     { fName, lName, researchProducts: [...prod] }
@@ -197,67 +227,77 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
         // const item = { fName, lName, researchProducts: [...prod] }
 
         // handleSaveData(item)
-         const studentData = {
+        const studentData = {
             fName,
             lName,
             researchProducts: [...prod],
-            sop: currentSop,
-            lors: currentLors
+
+            sop: currentSop != "" ? currentSop : "No SOP Found!",
+            
+            lors: currentLors.every(item => item === '')
+                ? ["No LOR Found!"] 
+                :   currentLors.filter(item => item !== ''),
+
+            collegeName: currentCollegeName,
+            dob:currentDob,
+            studentImage:currentStudentPhoto
+            
         };
 
         setDataa(prevDataa => [...prevDataa, studentData]);
 
         handleSaveData(studentData);
 
-
         setProdNo(1);
         setProd([]);
         setFName("");
         setLName("");
         resetProductFields();
-        setCurrentSop(""); // Reset SOP
-        setCurrentLors([""]); // Reset LORs
+        setCurrentSop(""); 
+        setCurrentLors([""]); 
+        setCurrentCollegeName(""); 
+        setCurrentDob(""); 
+        setCurrentStudentPhoto(blankPictureUrl); 
+
 
     };
 
-    const handleSaveData = (studentData) => {
+
+    const handleSaveData = async(studentData) => {
         console.log("Saving data:", studentData);
-    };
-    // const handleSaveData = async(studentData) => {
-        //console.log("Saving data:", studentData);
         
-    //     const currentDate = new Date();
+        const currentDate = new Date();
 
-    //     const researchData = {
-    //         dataa:[studentData],
-    //         timestamp:currentDate
-    //     };
+        const researchData = {
+            dataa:[studentData],
+            timestamp:currentDate
+        };
 
 
-    //     try {
+        try {
              
-    //     // Reference to the document for the current user
-    //     const userDocRef = doc(db, 'researchProducts', auth.currentUser?.email);
+        // Reference to the document for the current user
+        const userDocRef = doc(db, 'researchProducts', auth.currentUser?.email);
 
       
-    //     // Check if the document exists
-    //     const docSnap = await getDoc(userDocRef);
+        // Check if the document exists
+        const docSnap = await getDoc(userDocRef);
 
-    //     if(docSnap.exists()){
-    //         await updateDoc(userDocRef,{
-    //             savedData: arrayUnion(researchData)
-    //         })
-    //     }else {
-    //         // If the document doesn't exist, create it and set the form data
-    //         await setDoc(userDocRef, { savedData: [researchData] });
-    //     }
+        if(docSnap.exists()){
+            await updateDoc(userDocRef,{
+                savedData: arrayUnion(researchData)
+            })
+        }else {
+            // If the document doesn't exist, create it and set the form data
+            await setDoc(userDocRef, { savedData: [researchData] });
+        }
         
-    //     // setShowForm(false);
+        // setShowForm(false);
 
-    // } catch (error) {
-    //     console.error('Error saving form data: ', error);
-    // }
-    // };
+    } catch (error) {
+        console.error('Error saving form data: ', error);
+    }
+    };
 
     const handleSaveDataSession = async() => {
         
@@ -354,6 +394,8 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
     };
 
 
+
+
     return (
         <>
         {showForm?(
@@ -363,6 +405,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                     <div style={{display:'flex',gap:10}}>
                     <button onClick={handleLor}>Add LORs</button>
                     <button onClick={handleSop}>Add SOP</button>
+                    <button onClick={handleInfo}>Information</button>
 
                     </div>
                     
@@ -377,13 +420,11 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                     </button>
                     <button onClick={handleHistory} className={styles.historyBtn}
                     data-tooltip-id="historyToolTip" data-tooltip-content="View History"
-
                     >
                         <img src="./historyIcon.svg" alt="" />
                     </button>
                     <Tooltip id="viewToolTip" />
                     <Tooltip id="historyToolTip" />
-
                     </div>
                 </div>
                
@@ -504,6 +545,54 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                 </div>
             </div>
 
+            {/* Modal for Add Other Info */}
+            <div className={styles.modal} style={{ display: `${showInfoModal ? "block" : "none"}` }}>
+                <div className={styles.modalBody}>
+                    <div>
+                        <span onClick={handleInfo} className={styles.close}>&times;</span>
+                    </div>
+                    <br />
+                    <div>
+                        
+                        {/* Add Picture Field */}
+                        <UploadStudentImage onImageUpload = {handleImageUpload}/>
+                        
+                        {/* School Name Input */}
+                        <div style={{ marginTop: "20px" }}>
+                            <label htmlFor="schoolName" style={{ display: "block", marginBottom: "10px" }}>School Name:</label>
+                            <input 
+                                type="text" 
+                                id="schoolName" 
+                                value={currentCollegeName} 
+                                onChange={(e) => setCurrentCollegeName(e.target.value)} 
+                                placeholder="Enter School Name" 
+                                className={styles.textInput}
+                                
+                            />
+                        </div>
+
+                        {/* Date of Birth Selector */}
+                        <div style={{ marginTop: "20px" }}>
+                            <label htmlFor="dob" style={{ display: "block", marginBottom: "10px" }}>Date of Birth:</label>
+                            <input 
+                                type="date" 
+                                id="dob" 
+                                className={styles.dateInput}
+                                // defaultValue="2002-01-01" 
+                                value={currentDob} 
+                                onChange={(e) => setCurrentDob(e.target.value)} 
+                            />
+                        </div>
+
+                        
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:"20px"}}>
+                            <div className={styles.calBtn}>
+                                <button  onClick={handleInfo} >Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Modal for view data */}
             <div className={styles.modal} style={{display:  `${showModal? "block":"none"}`}}>
