@@ -40,10 +40,8 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
     const [currentStudentPhoto, setCurrentStudentPhoto] = useState(blankPictureUrl);
     const [currentDob, setCurrentDob] = useState();
     const [currentCollegeName, setCurrentCollegeName] = useState();
+    const [resetImageCompKey, setResetImageCompKey] = useState(0);
 
-    
-
-    
 
     const handleLorChange = (e, index) => {
         const updatedLors = [...currentLors];
@@ -191,6 +189,28 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
             return;
         }
 
+        if(!currentCollegeName){
+            alert("Please add college name of the current student.")
+            return
+        }
+        if(!currentDob){
+            alert("Please add DOB of the current student.")  
+            return         
+        }
+        if(!currentCollegeName){
+            alert("Please add college name of the current student.")
+            return
+        }
+        if(currentLors.every(item => item === '')){
+            alert("Please add at least one LOR of the current student.")
+            return
+        }
+        if(!currentSop){
+            alert("Please add personal statement of the current student.")
+            return
+        }
+        
+
         if (prod.length === 0 ) {
             alert("Please add at least one research product for the student.");
             return;
@@ -206,14 +226,8 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
             setResearchType("")
         }
 
-        if(!currentCollegeName){
-            alert("Please add college name of the current student")
-            return
-        }
-        if(!currentDob){
-            alert("Please add DOB of the current student")  
-            return         
-        }
+
+        
 
         
 
@@ -234,9 +248,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
 
             sop: currentSop != "" ? currentSop : "No SOP Found!",
             
-            lors: currentLors.every(item => item === '')
-                ? ["No LOR Found!"] 
-                :   currentLors.filter(item => item !== ''),
+            lors:   currentLors.filter(item => item !== ''),
 
             collegeName: currentCollegeName,
             dob:currentDob,
@@ -258,10 +270,10 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
         setCurrentCollegeName(""); 
         setCurrentDob(""); 
         setCurrentStudentPhoto(blankPictureUrl); 
+        setResetImageCompKey(prev=>prev+1)
 
 
     };
-
 
     const handleSaveData = async(studentData) => {
         console.log("Saving data:", studentData);
@@ -394,8 +406,6 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
     };
 
 
-
-
     return (
         <>
         {showForm?(
@@ -404,10 +414,10 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                  <div className={styles.headerButtons}>
                     <div style={{display:'flex',gap:10}}>
                     <button onClick={handleLor}>Add LORs</button>
-                    <button onClick={handleSop}>Add SOP</button>
-                    <button onClick={handleInfo}>Information</button>
+                    <button onClick={handleSop}>Add Personal Statement</button>
+                    {/* <button onClick={handleInfo}>Information</button> */}
 
-                    </div>
+                </div>
                     
                     {/* <button disabled onClick={() => document.getElementById('fileInput').click()}>Upload File</button> */}
                     <input id="fileInput" style={{display: 'none'}} type="file" accept=".xlsx" onChange={handleFileUpload} />
@@ -438,6 +448,32 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                         value={lName}
                         onChange={(e) => setLName(e.target.value)} />
 
+                    </div>
+                    
+                    <div className={styles.moreInfoDiv}>
+                        <input 
+                                type="text" 
+                                id="schoolName" 
+                                value={currentCollegeName} 
+                                onChange={(e) => setCurrentCollegeName(e.target.value)} 
+                                placeholder="Enter School Name" 
+                                className={styles.textInput}
+                        />
+                        
+                        <input 
+                            type="date" 
+                            id="dob" 
+                            className={styles.dateInput}
+                            // defaultValue="2002-01-01" 
+                            value={currentDob} 
+                            onChange={(e) => setCurrentDob(e.target.value)} 
+                        />
+
+                          {/* Add Picture Field */}                   
+                    </div>
+
+                    <div className={styles.addPhotoDiv}>
+                        <UploadStudentImage onImageUpload = {handleImageUpload} key={resetImageCompKey}/>
                     </div>
                     
                     <div className={styles.prodNoDiv}>
