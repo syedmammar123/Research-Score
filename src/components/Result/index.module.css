@@ -42,12 +42,12 @@ h2{
 
 
 .mainHeader {
-    display: flex;
-    align-items: center;
+    /* display: flex; */
+    /* align-items: center; */
     background-color: rgba(109, 201, 255, 0.102);   
     width: 100%;
     text-align: center;
-    padding: 5px 0px ;
+    padding: 5px 0px;
     font-size: 20px;
     font-weight: 600;
     border: none !important;
@@ -65,11 +65,11 @@ h2{
 }
 
 .mainHeader1 {
-    width: 20%;
+    width: 15%;
     border-bottom: 1px solid #caeaff;
 }    
 .mainHeader2 {
-    width: 55%;
+    width: 20%;
     border-bottom: 1px solid #caeaff;
 }
 .mainHeader3 {
@@ -85,6 +85,15 @@ tr:hover{
     background-color:  #caeaff53;
 }
 
+
+.selectedProperty{
+   box-shadow: inset 0px 2px 5px  rgba(0, 0, 0, 0.2);
+   cursor: pointer;
+}
+.cursorPointer{
+      cursor: pointer;
+
+}
 @keyframes spin {
   0% {
     transform: rotate(0deg);

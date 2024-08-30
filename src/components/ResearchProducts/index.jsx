@@ -348,7 +348,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
 
         // handleSaveDataSession()
 
-        // setShowForm(false) //this should be commented if storing a session.
+        setShowForm(false) //this should be commented if storing a session.
     };
 
     const handleFileUpload = (e) => {

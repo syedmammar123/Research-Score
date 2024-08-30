@@ -43,9 +43,18 @@ const ResearchRatingComponent = ({userData}) => {
     }
 
     const handleSubmit = async (event) => {
-      console.log(ratings)
-        event.preventDefault();
-        try {
+      // console.log(ratings)
+      event.preventDefault();
+
+      if (selectedCheckboxes.length < 5) {
+        alert("Please select at least five preferred characteristics!");
+        return;
+      } else if (selectedCheckboxes.length > 10) {
+          alert("Please choose no more than ten preferred characteristics!");
+          return;
+      }
+
+      try {
         const newRatings = {...ratings,selectedCheckboxes }
 
         // Reference to the document for the current user
@@ -105,7 +114,7 @@ return (
 
         
           {/* add more options */}
-          <div className={styles.modal} style={{display:`${showModal? "block":"none"}`}}>
+          {/* <div className={styles.modal} style={{display:`${showModal? "block":"none"}`}}>
               <div className={styles.modalBody}>
                   <div>
                       <span onClick={handleModal} className={styles.close}>&times;</span>
@@ -113,14 +122,15 @@ return (
                   <CheckboxGroup selectedItems={selectedCheckboxes} onSelectionChange={handleCheckboxSelectionChange} />
 
                   
-                  {/* <div style={{textAlign:"center"}}>
-
-                      <h3>No Data to display!</h3>
-                  </div> */}
+               
 
               </div>
+          </div> */}
+
+          <div style={{width:"100%",textAlign:"center",paddingBottom:"20px",fontSize:"22px"}}>
+            Research Ratings
           </div>
-          <div className={styles.addButtonDiv}>
+          {/* <div className={styles.addButtonDiv}>
             <button
             type="button"
             onClick={handleModal} className={styles.addButton}
@@ -129,7 +139,7 @@ return (
             <img src="./addIcon.svg" alt="" />
             </button>
            <Tooltip id="viewToolTip" />
-          </div>
+          </div> */}
          
           
           <div className={styles.container} >
@@ -322,6 +332,21 @@ return (
               
             </label>
           </div>
+
+          <div style={{width:"100%",textAlign:"center",fontSize:"22px"}}>
+            Characteristics Preference Ratings
+          </div>
+
+          <div style={{fontSize:"10px",fontStyle:"italic",color:"gray",paddingTop:"10px"}}>
+            Please select any 05-10 characteristics.
+          </div>
+
+          <div className={styles.checkBoxDiv}>
+            <CheckboxGroup selectedItems={selectedCheckboxes} onSelectionChange={handleCheckboxSelectionChange} />
+
+          </div>
+
+          
 
            
 
