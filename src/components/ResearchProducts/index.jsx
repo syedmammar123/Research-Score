@@ -473,7 +473,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                     </div>
 
                     <div className={styles.addPhotoDiv}>
-                        <UploadStudentImage onImageUpload = {handleImageUpload} key={resetImageCompKey}/>
+                        <UploadStudentImage onImageUpload = {handleImageUpload} resetKey={resetImageCompKey}/>
                     </div>
                     
                     <div className={styles.prodNoDiv}>
