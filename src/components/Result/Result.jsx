@@ -447,7 +447,7 @@ const Result = ( {userData,rating,stdData}) => {
   };
 
 
-const openPDFInNewTab = (item,index,result) => {
+const openPDFInNewTab1 = (item,index,result) => {
   const doc = new jsPDF();
   
   // Create a canvas element
@@ -710,6 +710,320 @@ const openPDFInNewTab = (item,index,result) => {
         alert("Image could not be loaded. Please check the URL.");
     };
 };
+const openPDFInNewTab2 = (item, index, result) => {
+    const doc = new jsPDF();
+  
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
+  
+    const ctx = canvas.getContext('2d');
+  
+    // Create the chart
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: result.map(student => student.name),
+            datasets: [{
+                label: 'Research Scores',
+                data: result.map(student => student.researchScore),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: (tooltipItem) => `Value: ${tooltipItem.raw}`,
+                    },
+                },
+            },
+        },
+        plugins: [{
+            id: 'bgColor',
+            beforeDraw: (chart, args, options) => {
+                const { ctx, width, height } = chart;
+                ctx.fillStyle = options.backgroundColor || 'white';
+                ctx.fillRect(0, 0, width, height);
+            }
+        }],
+    });
+
+    // Wait for the chart to fully render
+    setTimeout(() => {
+        const imgData = canvas.toDataURL('image/png');
+        
+        doc.setFontSize(16);
+        doc.setFont("Helvetica", "bold");
+        doc.text("Student Report", 10, 20);
+
+        // Name
+        doc.setFontSize(12);
+        doc.setFont("Helvetica", "normal");
+        doc.text(`Name: ${item.name}`, 10, 40);
+
+        doc.text(`Productivity Score: ${item.researchScore}`, 10, 86);
+        doc.text(`Rank Position: ${index + 1}/${result.length}`, 10, 94);
+
+        // Add images
+        doc.addImage(imgData, 'PNG', 140, 90, 50, 50);
+        doc.addImage(imgData, 'PNG', 40, 150, 90, 90);
+
+        // Save the PDF and open it in a new tab
+        const pdfBlob = doc.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        window.open(url, '_blank');
+    }, 1000); // Adjust the timeout duration as needed
+};
+const openPDFInNewTab = (item, index, result) => {
+  const doc = new jsPDF();
+  
+  // Create a canvas element
+  const canvas = document.createElement('canvas');
+  canvas.width = 200;
+  canvas.height = 200;
+  
+  const ctx = canvas.getContext('2d');
+  const bgColor = {
+    id: 'bgColor',
+    beforeDraw: (chart, steps, options) => {
+      const { ctx, width, height } = chart;
+      ctx.fillStyle = options.backgroundColor;
+      ctx.fillRect(0, 0, width, height);
+      ctx.restore();
+    }
+  };
+
+  // Create the chart
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: result.map(student => student.name),
+      datasets: [{
+        label: 'Research Scores',
+        data: result.map(student => student.researchScore),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        bgColor: { backgroundColor: 'white' },
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem) => `Value: ${tooltipItem.raw}`,
+          },
+        },
+      },
+    },
+    plugins: [bgColor],
+  });
+
+  // Function to generate and open PDF
+  const generateAndOpenPDF = () => {
+    doc.setFont("Helvetica");
+    doc.setFontSize(12);
+
+    // Title of the Report
+    doc.setFontSize(16);
+    doc.setFont("Helvetica", "bold");
+    doc.text("Student Report", 10, 20);
+
+    // Name
+    doc.setFontSize(12);
+    doc.setFont("Helvetica", "normal");
+    doc.text(`Name: ${item.name}`, 10, 40);
+
+    // Picture
+    const imgWidth = 50;
+    const imgHeight = 50;
+    const imgX = 150;
+    const imgY = 30;
+    const imgUrl = item.pic;
+
+    const img = new Image();
+    img.src = imgUrl;
+    img.onload = function () {
+        doc.addImage(img, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+
+        // Date of Birth
+        doc.text(`Date of Birth: ${item.dob}`, 10, 50);
+
+        // Medical School
+        doc.text(`Medical School: ${item.medSchool}`, 10, 60);
+        
+        doc.setFont("Helvetica", "bold");
+        doc.text(`Research Productivity Summary`, 10, 80);
+        doc.setFont("Helvetica", "normal");
+        // Research Score
+        doc.text(`Productivity Score: ${item.researchScore}`, 10, 86);
+        doc.text(`Rank Position: ${index+1}/${result.length}`, 10, 94);
+
+        // Wait for chart rendering
+        setTimeout(() => {
+            const imgData = canvas.toDataURL('image/png'); 
+            doc.addImage(imgData, 'PNG', 130, 120, 50, 50);
+
+            // SOP Score
+            doc.setFont("Helvetica", "bold");
+            doc.text("Characteristics Identified in Personal Statement", 10, 105);
+            doc.setFont("Helvetica", "normal");
+            let sopYy = 115;
+            item.sopScore.characteristicsInSOP.forEach((char, index) => {
+                doc.text(`${index + 1}. ${char}`, 20, sopYy);
+                sopYy += 5;
+            });
+
+            doc.text(`Number matching your program’s valued characteristics: ${item.sopScore.matchedCharacteristics}`, 10, sopYy + 10);
+            
+            doc.setFont("Helvetica", "bold");
+            doc.text("Characteristics Identified in Letters of Recommendation", 10, sopYy + 30);
+            doc.setFont("Helvetica", "normal");
+            
+            sopYy = sopYy + 40;
+            item.lorScore.characteristicsInLOR.forEach((char, index) => {
+                doc.text(`${index + 1}. ${char}`, 20, sopYy);
+                sopYy += 5;
+            });
+
+            doc.text(`Number matching your program’s valued characteristics: ${item.lorScore.matchedCharacteristics}`, 10, sopYy + 10);
+            
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.setFont("Helvetica", "bold");
+            doc.text("Research Productivity", 10, 20);
+
+            // Name
+            doc.setFontSize(12);
+            doc.setFont("Helvetica", "normal");
+            doc.text(`Overall Score: ${item.researchScore}`, 10, 40);
+
+            doc.text(`Total Number of Research Products: ${item.researchProductsCount}`, 10, 60);
+            doc.text(`Number of Research Products Related to Specialty: ${item.specialtyCount}`, 10, 75);
+            doc.text(`Number of First Author Research Products: ${item.fNameCount}`, 10, 90);
+            doc.text(`Number of Peer-Reviewed Journal Articles: ${item.peerReviewedCount}`, 10, 105);
+            doc.text(`Number of Abstracts or Presentations: ${item.abstractResearchCount}`, 10, 120);
+            doc.text(`Number of Published Research Products: ${item.publishedCount}`, 10, 135);
+
+            const imgData2 = canvas.toDataURL('image/png'); 
+            doc.addImage(imgData2, 'PNG', 40, 150, 90, 90);
+
+            doc.addPage();
+            
+            // Add space before listing LORs
+            let currentY = 20;
+            const pageHeight = 280; // Adjust for bottom margin
+
+            // Ensure proper spacing before adding LORs
+            doc.setFont("Helvetica", "bold");
+            doc.text("Letters of Recommendation:", 10, currentY);
+            currentY += 20;
+            doc.setFont("Helvetica", "normal");
+
+            // Display LORs
+            item.lor.forEach((lor, index) => {
+                if (currentY >= pageHeight) {
+                    doc.addPage();
+                    currentY = 20;
+                    doc.setFont("Helvetica", "bold");
+                    doc.text("Letters of Recommendation:", 10, currentY);
+                    currentY += 10;
+                    doc.setFont("Helvetica", "normal");
+                }
+                // Split LOR text into multiple lines if necessary
+                doc.setFontSize(12);
+                doc.setFont("Helvetica", "bold");
+                doc.text(`Letter # ${index+1}`, 10, currentY-10);
+                doc.setFontSize(10);
+                doc.setFont("Helvetica", "normal");
+
+                const lorLines = doc.splitTextToSize(lor, 190);
+                lorLines.forEach((line) => {
+                    if (currentY >= pageHeight) {
+                        doc.addPage();
+                        currentY = 20;
+                    }
+                    doc.text(line, 10, currentY);
+                    currentY += 7;
+                });
+                // Add some space between LORs
+                currentY += 10;
+            });
+            
+            // Add a new page for LOR Characteristics
+            doc.addPage();
+
+            doc.setFontSize(12);
+
+            // Personal Statement (SOP)
+            doc.setFont("Helvetica", "bold");
+            doc.text("Personal Statement:", 10, 20);
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+            let sopY = 30;
+            const sopText = doc.splitTextToSize(item.sop, 190);
+
+            sopText.forEach((textLine) => {
+                if (sopY >= pageHeight) {
+                    doc.addPage();
+                    sopY = 20;
+                }
+                doc.text(textLine, 10, sopY);
+                sopY += 7;
+            });
+
+            doc.setFontSize(12);
+            sopY += 10;
+            if (sopY >= pageHeight) {
+                doc.addPage();
+                sopY = 20;
+            }
+
+            // Characteristics in SOP (Top 3 bolded)
+            doc.setFont("Helvetica", "bold");
+            sopY -= 20;
+            if (sopY >= pageHeight) {
+                doc.addPage();
+                sopY = 20;
+            }
+            doc.text("Top Characteristics from SOP:", 10, sopY);
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+            sopY += 10;
+            item.sopScore.characteristicsInSOP.forEach((char, index) => {
+                if (index < 3) {
+                    doc.setFont("Helvetica", "bold");
+                } else {
+                    doc.setFont("Helvetica", "normal");
+                }
+                if (sopY >= pageHeight) {
+                    doc.addPage();
+                    sopY = 20;
+                }
+                doc.text(`${index + 1}. ${char}`, 20, sopY);
+                sopY += 10;
+            });
+            
+            // Generate the PDF and open it in a new tab
+            const pdfBlob = doc.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            window.open(url, '_blank');
+             // Generate the PDF and get its Blob
+   
+      
+        }, 1000); // Adjust timeout as needed for chart rendering
+    };
+};
+generateAndOpenPDF()
+}
 
 
 
