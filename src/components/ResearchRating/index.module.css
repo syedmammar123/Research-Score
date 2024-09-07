@@ -112,7 +112,7 @@ input[type="number"] {
 .checkBoxDiv{
   display: flex;
   justify-content: center;
-  height: 50vh;
+  /* height: 50vh; */
   overflow-y: scroll;
   border: 1px solid rgba(128, 128, 128, 0.433);
   border-radius: 10px;

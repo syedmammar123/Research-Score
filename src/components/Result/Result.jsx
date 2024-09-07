@@ -420,7 +420,7 @@ const Result = ( {userData,rating,stdData}) => {
       resData.push(final)
     }
 
-    resData.sort((a,b)=>b.score-a.score)
+    resData.sort((a,b)=>b.researchScore-a.researchScore)
     console.log(resData)
     setResult(resData)
 
@@ -439,44 +439,157 @@ const openPDFInNewTab = (item, index, result) => {
   
   const ctx = canvas.getContext('2d');
 
-  function createChart(selectedStudentName) {
-    // Create the chart
-    new Chart(ctx, {
+// function createChart(selectedStudentName, id) {
+//   // Get scores from result array and calculate mean and standard deviation
+//   const scores = result.map(student => student.researchScore);
+//   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+//   const stdDev = Math.sqrt(scores.map(score => Math.pow(score - mean, 2)).reduce((a, b) => a + b) / scores.length);
+
+//   // Function to generate normal distribution points
+//   function normalDistribution(x, mean, stdDev) {
+//     return (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-Math.pow(x - mean, 2) / (2 * Math.pow(stdDev, 2)));
+//   }
+
+//   // Generate the normal distribution curve data
+//   const sortedScores = [...new Set(scores)].sort((a, b) => a - b); // Unique sorted scores
+//   const bellCurveData = sortedScores.map(score => normalDistribution(score, mean, stdDev));
+
+//   // Find the selected student's score
+//   const selectedStudent = result.find(student => student.id === id);
+//   const selectedScore = selectedStudent ? selectedStudent.researchScore : null;
+
+//   // Create the chart
+//   new Chart(ctx, {
+//     type: 'line',
+//     data: {
+//       labels: sortedScores, // Use sorted scores for labels (x-axis)
+//       datasets: [
+//         {
+//           label: 'Research Scores',
+//           data: bellCurveData, // Use bell curve data for y-axis
+//           backgroundColor: 'rgba(75, 192, 192, 0.2)',
+//           borderColor: 'rgba(75, 192, 192, 1)',
+//           borderWidth: 1,
+//           fill: true,
+//           tension: 0.4, // Smooth curve for the bell curve
+//           pointRadius: 0, // Remove all dots from the main curve
+//         },
+//         {
+//           label: false,
+//           data: sortedScores.map(score => score === selectedScore ? normalDistribution(score, mean, stdDev) : null),
+//           backgroundColor: 'rgba(255, 99, 132, 0.6)',
+//           borderColor: 'rgba(255, 99, 132, 1)',
+//           borderWidth: 1,
+//           pointStyle: 'circle',
+//           pointRadius: sortedScores.includes(selectedScore) ? 4 : 0, // Dot only for the selected student's score
+//           pointHoverRadius: 4,
+//           pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+//           pointBorderColor: '#fff',
+//           showLine: false, // Disable the line for this dataset
+//         }
+//       ]
+//     },
+//     options: {
+//       responsive: false,
+//       plugins: {
+//         legend: { display: false },
+//         tooltip: {
+//           callbacks: {
+//             label: (tooltipItem) => `Score: ${tooltipItem.raw}`,
+//           },
+//         },
+//       },
+//       scales: {
+//         x: {
+//           title: {
+//             display: true,
+//             text: 'Research Score',
+//           },
+//           ticks: {
+//             display: true, // Show score labels on the x-axis
+//           },
+//         },
+//         y: {
+//           title: {
+//             display: false,
+//             text: 'Probability Density',
+//           },
+//           ticks: {
+//             display: false, // Show labels on the y-axis
+//           },
+//         },
+//       },
+//     },
+//   });
+// }
+
+
+
+
+function createChart(selectedStudentName, id) {
+  // Get scores from result array and calculate mean and standard deviation
+  const scores = result.map(student => student.researchScore);
+  const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const stdDev = Math.sqrt(scores.map(score => Math.pow(score - mean, 2)).reduce((a, b) => a + b) / scores.length);
+
+  // Function to generate normal distribution points
+  function normalDistribution(x, mean, stdDev) {
+    return (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-Math.pow(x - mean, 2) / (2 * Math.pow(stdDev, 2)));
+  }
+
+  // Generate a range of values to cover the bell curve more effectively
+  const minScore = Math.min(...scores) - 10; // Extend range below minimum score
+  const maxScore = Math.max(...scores) + 10; // Extend range above maximum score
+  const step = 1; // Step size for generating values
+  const range = Array.from({ length: (maxScore - minScore) / step + 1 }, (_, i) => minScore + i * step);
+  
+  const bellCurveData = range.map(score => normalDistribution(score, mean, stdDev));
+
+  // Find the selected student's score
+  const selectedStudent = result.find(student => student.id === id);
+  const selectedScore = selectedStudent ? selectedStudent.researchScore : null;
+
+  // Create the chart
+  new Chart(ctx, {
     type: 'line',
     data: {
-      labels: result.map(student => student.name),
+      labels: range, // Use the extended range for labels (x-axis)
       datasets: [
         {
           label: 'Research Scores',
-          data: result.map(student => student.researchScore),
+          data: bellCurveData, // Use bell curve data for y-axis
           backgroundColor: 'rgba(75, 192, 192, 0.2)',
           borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 2,
+          borderWidth: 1,
           fill: true,
-          tension: 0.4, // Smooth curve
+          tension: 0.4, // Smooth curve for the bell curve
+          pointRadius: 0, // Remove all dots from the main curve
         },
         {
-          label: selectedStudentName,
-          data: result.map(student => student.name === selectedStudentName ? student.researchScore : null),
+          label: `Selected Student (${selectedStudentName})`,
+          data: range.map(score => score === selectedScore ? normalDistribution(score, mean, stdDev) : null),
           backgroundColor: 'rgba(255, 99, 132, 0.6)',
           borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 2,
+          borderWidth: 1,
           pointStyle: 'circle',
-          pointRadius: 8,
-          pointHoverRadius: 12,
+           pointRadius: function(context) {
+            const { dataIndex } = context;
+            return range[dataIndex] === selectedScore ? 4 : 0; // Dot only for the selected student's score
+          },
+          pointHoverRadius: 4,
           pointBackgroundColor: 'rgba(255, 99, 132, 1)',
           pointBorderColor: '#fff',
-          tension: 0, // No curve for the highlighted point
+          showLine: false, // Disable the line for this dataset
         }
       ]
     },
     options: {
       responsive: false,
       plugins: {
-        legend: { position: 'top' },
+        legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (tooltipItem) => `Value: ${tooltipItem.raw}`,
+            label: (tooltipItem) => `Score: ${tooltipItem.raw}`,
           },
         },
       },
@@ -484,27 +597,100 @@ const openPDFInNewTab = (item, index, result) => {
         x: {
           title: {
             display: true,
-            text: 'Students',
+            text: 'Research Score',
           },
           ticks: {
-            display: false, // Hide the student names on the x-axis
+            display: true, // Show score labels on the x-axis
+            beginAtZero: false, // Don't start at zero if it’s not relevant
           },
+          min: 0, // Ensure the X-axis starts from 0
         },
         y: {
           title: {
-            display: true,
-            text: 'Research Score',
+            display: false,
+            text: 'Probability Density',
           },
+          ticks: {
+            display: false, // Show score labels on the x-axis
+           
+          },
+          beginAtZero: true, // Ensure the Y-axis starts from zero
         },
       },
     },
   });
-
-  }
-
+}
 
 
-  createChart(item.name); // This will highlight John Doe's score
+createChart(item.name,item.id); // Highlight John Doe's score
+
+
+  // function createChart(selectedStudentName) {
+  //   // Create the chart
+  //   new Chart(ctx, {
+  //   type: 'line',
+  //   data: {
+  //     labels: result.map(student => student.name),
+  //     datasets: [
+  //       {
+  //         label: 'Research Scores',
+  //         data: result.map(student => student.researchScore),
+  //         backgroundColor: 'rgba(75, 192, 192, 0.2)',
+  //         borderColor: 'rgba(75, 192, 192, 1)',
+  //         borderWidth: 2,
+  //         fill: true,
+  //         tension: 0.4, // Smooth curve
+  //       },
+  //       {
+  //         label: selectedStudentName,
+  //         data: result.map(student => student.name === selectedStudentName ? student.researchScore : null),
+  //         backgroundColor: 'rgba(255, 99, 132, 0.6)',
+  //         borderColor: 'rgba(255, 99, 132, 1)',
+  //         borderWidth: 2,
+  //         pointStyle: 'circle',
+  //         pointRadius: 8,
+  //         pointHoverRadius: 12,
+  //         pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+  //         pointBorderColor: '#fff',
+  //         tension: 0, // No curve for the highlighted point
+  //       }
+  //     ]
+  //   },
+  //   options: {
+  //     responsive: false,
+  //     plugins: {
+  //       legend: { position: 'top' },
+  //       tooltip: {
+  //         callbacks: {
+  //           label: (tooltipItem) => `Value: ${tooltipItem.raw}`,
+  //         },
+  //       },
+  //     },
+  //     scales: {
+  //       x: {
+  //         title: {
+  //           display: true,
+  //           text: 'Students',
+  //         },
+  //         ticks: {
+  //           display: false, // Hide the student names on the x-axis
+  //         },
+  //       },
+  //       y: {
+  //         title: {
+  //           display: true,
+  //           text: 'Research Score',
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
+
+  // }
+
+
+
+  // createChart("jhon doe"); // This will highlight John Doe's score
 
 
   // Function to generate and open PDF
@@ -542,7 +728,7 @@ const openPDFInNewTab = (item, index, result) => {
         // Research Score
 
         doc.setFontSize(12)
-        doc.text(`Productivity Score: ${item.researchScore}`, 10, 80);
+        doc.text(`Productivity Score: ${item.researchScore} (Mean = ${(result.reduce((acc,curr)=>acc+curr.researchScore,0)/result.length).toFixed(2)})`, 10, 80);
         doc.text(`Rank Position: ${index+1}/${result.length}`, 10, 90);
 
         // Wait for chart rendering
@@ -563,7 +749,7 @@ const openPDFInNewTab = (item, index, result) => {
             });
 
             doc.setFont("Times","bold")
-            doc.text(`Number matching your program’s valued characteristics: ${item.sopScore.matchedCharacteristics}`, 20, sopYy +5);
+            doc.text(`Number matching your program’s valued characteristics: ${item.sopScore.matchedCharacteristics} (Mean = ${(result.reduce((acc,curr)=>acc+Number(curr.sopScore.matchedCharacteristics[0]),0)/result.length).toFixed(1)})`, 20, sopYy +5);
             
             doc.setFontSize(22)
             doc.setFont("Times", "bold");
@@ -578,7 +764,7 @@ const openPDFInNewTab = (item, index, result) => {
             });
 
             doc.setFont("Times","bold")
-            doc.text(`Number matching your program’s valued characteristics: ${item.lorScore.matchedCharacteristics}`, 20, sopYy + 5);
+            doc.text(`Number matching your program’s valued characteristics: ${item.lorScore.matchedCharacteristics} (Mean = ${(result.reduce((acc,curr)=>acc+Number(curr.lorScore.matchedCharacteristics[0]),0)/result.length).toFixed(1)})`, 20, sopYy + 5);
             
             doc.addPage();
             doc.setFontSize(22);
@@ -588,18 +774,28 @@ const openPDFInNewTab = (item, index, result) => {
             // Name
             doc.setFontSize(12);
             // doc.setFont("Times", "normal");
-            doc.text(`Overall Score: ${item.researchScore}`, 15, 40);
+            doc.text(`Overall Score: ${item.researchScore} (Mean = ${(result.reduce((acc,curr)=>acc+curr.researchScore,0)/result.length).toFixed(1)})`, 15, 40);
 
             doc.setFont("Times", "normal");
-            doc.text(`Total Number of Research Products: ${item.researchProductsCount}`, 15, 60);
-            doc.text(`Number of Research Products Related to Specialty: ${item.specialtyCount}`, 15, 70);
-            doc.text(`Number of First Author Research Products: ${item.fNameCount}`, 15, 80);
-            doc.text(`Number of Peer-Reviewed Journal Articles: ${item.peerReviewedCount}`, 15, 90);
-            doc.text(`Number of Abstracts or Presentations: ${item.abstractResearchCount}`, 15, 100);
-            doc.text(`Number of Published Research Products: ${item.publishedCount}`, 15, 110);
+            doc.text(`Total Number of Research Products: ${item.researchProductsCount} (Mean = ${(result.reduce((acc,curr)=>acc+curr.researchProductsCount,0)/result.length).toFixed(1)})`, 15, 60);
+            doc.text(`Number of Research Products Related to Specialty: ${item.specialtyCount} (Mean = ${(result.reduce((acc,curr)=>acc+curr.specialtyCount,0)/result.length).toFixed(1)})`, 15, 70);
+            doc.text(`Number of First Author Research Products: ${item.fNameCount} (Mean = ${(result.reduce((acc,curr)=>acc+curr.fNameCount,0)/result.length).toFixed(1)})`, 15, 80);
+            doc.text(`Number of Peer-Reviewed Journal Articles: ${item.peerReviewedCount} (Mean = ${(result.reduce((acc,curr)=>acc+curr.peerReviewedCount,0)/result.length).toFixed(1)})`, 15, 90);
+            doc.text(`Number of Abstracts or Presentations: ${item.abstractResearchCount} (Mean = ${(result.reduce((acc,curr)=>acc+curr.abstractResearchCount,0)/result.length).toFixed(1)})`, 15, 100);
+            doc.text(`Number of Published Research Products: ${item.publishedCount} (Mean = ${(result.reduce((acc,curr)=>acc+curr.publishedCount,0)/result.length).toFixed(1)})`, 15, 110);
 
-            const imgData2 = canvas.toDataURL('image/png'); 
-            doc.addImage(imgData2, 'PNG', 50, 150, 90, 90);
+
+            doc.setFontSize(18);
+            doc.setFont("Times", "bold");
+            doc.text('Overall Score Distribution', (doc.internal.pageSize.width - doc.getTextWidth('Overall Score Distribution')) / 2, 140);
+
+            // doc.text(`Overall Score Distribution`, 15, 140);
+            doc.setFontSize(12);
+            doc.setFont("Times", "normal");
+
+
+            doc.addImage(canvas.toDataURL('image/png'), 'PNG', (doc.internal.pageSize.width - 90) / 2, 160, 90, 90);
+
 
             doc.addPage();
             
@@ -719,9 +915,12 @@ const openPDFInNewTab = (item, index, result) => {
       return [...prevResult].sort((a, b) => {
         if (val === 'research') {
           return b.researchScore - a.researchScore; 
-        } else if (val === 'pref') {
-          return (b.prefferedRating === "NA" ? 0 : b.prefferedRating) - 
-                (a.prefferedRating === "NA" ? 0 : a.prefferedRating); 
+        } else if (val === 'sopScore') {
+          return Number((b.sopScore.matchedCharacteristics[0])) - 
+                Number((a.sopScore.matchedCharacteristics[0])); 
+        } else if (val === 'lorScore') {
+          return (Number(b.lorScore.matchedCharacteristics[0])) - 
+                Number((a.lorScore.matchedCharacteristics[0])); 
         }
         return 0;
       });
@@ -739,7 +938,8 @@ const openPDFInNewTab = (item, index, result) => {
       setResult([
     {
         "name": "Sami Billo",
-        "researchScore": 23.3,
+        "id":"1",
+        "researchScore": 41.3,
         "sopScore": {
             "characteristicsInSOP": [
                 "problem-solving abilities",
@@ -776,7 +976,8 @@ const openPDFInNewTab = (item, index, result) => {
         "publishedCount": 1
     },
       {
-        "name": "Sami Billo",
+        "name": "Samidawng Billo",
+        "id":"3",
         "researchScore": 35.3,
         "sopScore": {
             "characteristicsInSOP": [
@@ -815,7 +1016,8 @@ const openPDFInNewTab = (item, index, result) => {
     },
     {
         "name": "Sami Bill",
-        "researchScore": 45.3,
+        "id":"2",
+        "researchScore": 25.3,
         "sopScore": {
             "characteristicsInSOP": [
                 "problem-solving abilities",
@@ -852,7 +1054,8 @@ const openPDFInNewTab = (item, index, result) => {
         "publishedCount": 1
     },
       {
-        "name": "Sami Billo",
+        "name": "Samiain Billo",
+        "id":"4",
         "researchScore": 35.3,
         "sopScore": {
             "characteristicsInSOP": [
@@ -890,7 +1093,86 @@ const openPDFInNewTab = (item, index, result) => {
         "publishedCount": 1
     },
       {
-        "name": "Sami Billo",
+        "name": "Samina Billyo",
+        "id":"5",
+        "researchScore": 53.3,
+        "sopScore": {
+            "characteristicsInSOP": [
+                "problem-solving abilities",
+                "organizational skills",
+                "punctuality",
+                "motivation",
+                "cultural sensitivity"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "lorScore": {
+            "characteristicsInLOR": [
+                "problem-solver",
+                "organized",
+                "punctual",
+                "motivated",
+                "culturally sensitive"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "pic": "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg",
+        "dob": "2024-08-01",
+        "medSchool": "Sam Bill High School and College",
+        "lor": [
+            "August 21, 2024\nAdmissions Committee\nJohns Hopkins University\nMaster of Public Health Program\n550 North Broadway\nBaltimore, MD 21205\nDear Members of the Admissions Committee,\nI am writing to enthusiastically recommend Dr. Michael Anderson for admission to the Master of Public Health (MPH) program at Johns Hopkins University. As Dr. Anderson’s supervisor at Greenwood Medical Center, I have had the pleasure of working closely with him for the past three years. During this time, Dr. Anderson has consistently demonstrated exceptional qualities that I believe make him an outstanding candidate for your program.\nDr. Anderson has shown remarkable problem-solving abilities throughout his tenure with us. His aptitude for diagnosing complex medical conditions and developing effective treatment plans is unparalleled. On numerous occasions, he has tackled intricate cases with a combination of analytical skill and creative thinking, resulting in improved patient outcomes and enhanced team performance. His problem-solving approach reflects both his deep understanding of medical science and his commitment to finding innovative solutions in challenging situations.\nIn addition to his problem-solving skills, Dr. Anderson is extraordinarily organized. His ability to manage multiple tasks efficiently, from patient care to administrative responsibilities, is a testament to his exceptional organizational skills. He maintains meticulous records, coordinates seamlessly with multidisciplinary teams, and ensures that all aspects of his work are completed with precision and attention to detail. This organizational prowess has been instrumental in streamlining processes and enhancing the overall efficiency of our department.\nPunctuality is another area where Dr. Anderson excels. His reliability in adhering to schedules and meeting deadlines is commendable. Whether in clinical settings or during team meetings, Dr. Anderson consistently arrives on time and is prepared to contribute meaningfully. This punctuality not only reflects his respect for others’ time but also underscores his commitment to maintaining high standards of professionalism.\nDr. Anderson’s motivation is a driving force behind his professional achievements. His dedication to advancing his knowledge, improving patient care, and contributing to public health is evident in his proactive approach to learning and development. He is always eager to take on new challenges, seek out additional training, and engage in research opportunities. His intrinsic motivation to excel and make a positive impact in the field of public health is truly inspiring.\nFurthermore, Dr. Anderson’s cultural sensitivity has significantly enhanced his effectiveness as a healthcare provider. He approaches patients from diverse backgrounds with respect and understanding, ensuring that care is delivered in a manner that is both inclusive and culturally appropriate. His ability to connect with individuals from various cultural contexts has fostered a supportive and compassionate environment for both patients and colleagues.\nIn summary, Dr. Michael Anderson possesses a unique blend of problem-solving skills, organizational acumen, punctuality, motivation, and cultural sensitivity that make him an exceptional candidate for the MPH program at Johns Hopkins University. I am confident that he will bring these strengths to your program and contribute positively to your academic community.\nThank you for considering this recommendation. Please feel free to contact me at (555) 123-4567 or s.roberts@greenwoodmed.com if you require any further information.\nSincerely,\nDr. Susan Roberts\nChief Medical Officer\nGreenwood Medical Center\n123 Healthway Avenue\nBaltimore, MD 21201\n(555) 123-4567\ns.roberts@greenwoodmed.com\n",
+            
+        ],
+        "sop": "Statement of Purpose:\nTo the Admissions Committee,\nI am excited to apply for the Master of Public Health (MPH) program at Johns Hopkins University. With a solid foundation in medicine and a passion for addressing public health challenges, I am eager to enhance my expertise and contribute to impactful solutions. My career has been distinguished by my problem-solving abilities, organizational skills, punctuality, motivation, and cultural sensitivity—qualities that I believe align well with the values of your esteemed program.\nMy journey as a physician has honed my problem-solving skills, allowing me to effectively address conThank you for considering my application. I look forward to discussing how my experiences and goals align with the mission of Johns Hopkins University.\nSincerely, Dr. Michael Anderson\nAugust 21, 2024\n\n",
+        "researchProductsCount": 15,
+        "specialtyCount": 0,
+        "fNameCount": 1,
+        "peerReviewedCount": 2,
+        "abstractResearchCount": 0,
+        "publishedCount": 1
+    },
+      {
+        "name": "Saminaplk Billo",
+        "id":"6",
+        "researchScore": 43.3,
+        "sopScore": {
+            "characteristicsInSOP": [
+                "problem-solving abilities",
+                "organizational skills",
+                "punctuality",
+                "motivation",
+                "cultural sensitivity"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "lorScore": {
+            "characteristicsInLOR": [
+                "problem-solver",
+                "organized",
+                "punctual",
+                "motivated",
+                "culturally sensitive"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "pic": "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg",
+        "dob": "2024-08-01",
+        "medSchool": "Sam Bill High School and College",
+        "lor": [
+            "August 21, 2024\nAdmissions Committee\nJohns Hopkins University\nMaster of Public Health Program\n550 North Broadway\nBaltimore, MD 21205\nDear Members of the Admissions Committee,\nI am writing to enthusiastically recommend Dr. Michael Anderson for admission to the Master of Public Health (MPH) program at Johns Hopkins University. As Dr. Anderson’s supervisor at Greenwood Medical Center, I have had the pleasure of working closely with him for the past three years. During this time, Dr. Anderson has consistently demonstrated exceptional qualities that I believe make him an outstanding candidate for your program.\nDr. Anderson has shown remarkable problem-solving abilities throughout his tenure with us. His aptitude for diagnosing complex medical conditions and developing effective treatment plans is unparalleled. On numerous occasions, he has tackled intricate cases with a combination of analytical skill and creative thinking, resulting in improved patient outcomes and enhanced team performance. His problem-solving approach reflects both his deep understanding of medical science and his commitment to finding innovative solutions in challenging situations.\nIn addition to his problem-solving skills, Dr. Anderson is extraordinarily organized. His ability to manage multiple tasks efficiently, from patient care to administrative responsibilities, is a testament to his exceptional organizational skills. He maintains meticulous records, coordinates seamlessly with multidisciplinary teams, and ensures that all aspects of his work are completed with precision and attention to detail. This organizational prowess has been instrumental in streamlining processes and enhancing the overall efficiency of our department.\nPunctuality is another area where Dr. Anderson excels. His reliability in adhering to schedules and meeting deadlines is commendable. Whether in clinical settings or during team meetings, Dr. Anderson consistently arrives on time and is prepared to contribute meaningfully. This punctuality not only reflects his respect for others’ time but also underscores his commitment to maintaining high standards of professionalism.\nDr. Anderson’s motivation is a driving force behind his professional achievements. His dedication to advancing his knowledge, improving patient care, and contributing to public health is evident in his proactive approach to learning and development. He is always eager to take on new challenges, seek out additional training, and engage in research opportunities. His intrinsic motivation to excel and make a positive impact in the field of public health is truly inspiring.\nFurthermore, Dr. Anderson’s cultural sensitivity has significantly enhanced his effectiveness as a healthcare provider. He approaches patients from diverse backgrounds with respect and understanding, ensuring that care is delivered in a manner that is both inclusive and culturally appropriate. His ability to connect with individuals from various cultural contexts has fostered a supportive and compassionate environment for both patients and colleagues.\nIn summary, Dr. Michael Anderson possesses a unique blend of problem-solving skills, organizational acumen, punctuality, motivation, and cultural sensitivity that make him an exceptional candidate for the MPH program at Johns Hopkins University. I am confident that he will bring these strengths to your program and contribute positively to your academic community.\nThank you for considering this recommendation. Please feel free to contact me at (555) 123-4567 or s.roberts@greenwoodmed.com if you require any further information.\nSincerely,\nDr. Susan Roberts\nChief Medical Officer\nGreenwood Medical Center\n123 Healthway Avenue\nBaltimore, MD 21201\n(555) 123-4567\ns.roberts@greenwoodmed.com\n",
+            
+        ],
+        "sop": "Statement of Purpose:\nTo the Admissions Committee,\nI am excited to apply for the Master of Public Health (MPH) program at Johns Hopkins University. With a solid foundation in medicine and a passion for addressing public health challenges, I am eager to enhance my expertise and contribute to impactful solutions. My career has been distinguished by my problem-solving abilities, organizational skills, punctuality, motivation, and cultural sensitivity—qualities that I believe align well with the values of your esteemed program.\nMy journey as a physician has honed my problem-solving skills, allowing me to effectively address conThank you for considering my application. I look forward to discussing how my experiences and goals align with the mission of Johns Hopkins University.\nSincerely, Dr. Michael Anderson\nAugust 21, 2024\n\n",
+        "researchProductsCount": 15,
+        "specialtyCount": 0,
+        "fNameCount": 1,
+        "peerReviewedCount": 2,
+        "abstractResearchCount": 0,
+        "publishedCount": 1
+    },
+      {
+        "name": "Saminaopk Billo",
+        "id":"7",
         "researchScore": 23.3,
         "sopScore": {
             "characteristicsInSOP": [
@@ -927,6 +1209,163 @@ const openPDFInNewTab = (item, index, result) => {
         "abstractResearchCount": 0,
         "publishedCount": 1
     },
+      {
+        "name": "Saminolka Billo",
+        "id":"8",
+        "researchScore": 53.3,
+        "sopScore": {
+            "characteristicsInSOP": [
+                "problem-solving abilities",
+                "organizational skills",
+                "punctuality",
+                "motivation",
+                "cultural sensitivity"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "lorScore": {
+            "characteristicsInLOR": [
+                "problem-solver",
+                "organized",
+                "punctual",
+                "motivated",
+                "culturally sensitive"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "pic": "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg",
+        "dob": "2024-08-01",
+        "medSchool": "Sam Bill High School and College",
+        "lor": [
+            "August 21, 2024\nAdmissions Committee\nJohns Hopkins University\nMaster of Public Health Program\n550 North Broadway\nBaltimore, MD 21205\nDear Members of the Admissions Committee,\nI am writing to enthusiastically recommend Dr. Michael Anderson for admission to the Master of Public Health (MPH) program at Johns Hopkins University. As Dr. Anderson’s supervisor at Greenwood Medical Center, I have had the pleasure of working closely with him for the past three years. During this time, Dr. Anderson has consistently demonstrated exceptional qualities that I believe make him an outstanding candidate for your program.\nDr. Anderson has shown remarkable problem-solving abilities throughout his tenure with us. His aptitude for diagnosing complex medical conditions and developing effective treatment plans is unparalleled. On numerous occasions, he has tackled intricate cases with a combination of analytical skill and creative thinking, resulting in improved patient outcomes and enhanced team performance. His problem-solving approach reflects both his deep understanding of medical science and his commitment to finding innovative solutions in challenging situations.\nIn addition to his problem-solving skills, Dr. Anderson is extraordinarily organized. His ability to manage multiple tasks efficiently, from patient care to administrative responsibilities, is a testament to his exceptional organizational skills. He maintains meticulous records, coordinates seamlessly with multidisciplinary teams, and ensures that all aspects of his work are completed with precision and attention to detail. This organizational prowess has been instrumental in streamlining processes and enhancing the overall efficiency of our department.\nPunctuality is another area where Dr. Anderson excels. His reliability in adhering to schedules and meeting deadlines is commendable. Whether in clinical settings or during team meetings, Dr. Anderson consistently arrives on time and is prepared to contribute meaningfully. This punctuality not only reflects his respect for others’ time but also underscores his commitment to maintaining high standards of professionalism.\nDr. Anderson’s motivation is a driving force behind his professional achievements. His dedication to advancing his knowledge, improving patient care, and contributing to public health is evident in his proactive approach to learning and development. He is always eager to take on new challenges, seek out additional training, and engage in research opportunities. His intrinsic motivation to excel and make a positive impact in the field of public health is truly inspiring.\nFurthermore, Dr. Anderson’s cultural sensitivity has significantly enhanced his effectiveness as a healthcare provider. He approaches patients from diverse backgrounds with respect and understanding, ensuring that care is delivered in a manner that is both inclusive and culturally appropriate. His ability to connect with individuals from various cultural contexts has fostered a supportive and compassionate environment for both patients and colleagues.\nIn summary, Dr. Michael Anderson possesses a unique blend of problem-solving skills, organizational acumen, punctuality, motivation, and cultural sensitivity that make him an exceptional candidate for the MPH program at Johns Hopkins University. I am confident that he will bring these strengths to your program and contribute positively to your academic community.\nThank you for considering this recommendation. Please feel free to contact me at (555) 123-4567 or s.roberts@greenwoodmed.com if you require any further information.\nSincerely,\nDr. Susan Roberts\nChief Medical Officer\nGreenwood Medical Center\n123 Healthway Avenue\nBaltimore, MD 21201\n(555) 123-4567\ns.roberts@greenwoodmed.com\n",
+            
+        ],
+        "sop": "Statement of Purpose:\nTo the Admissions Committee,\nI am excited to apply for the Master of Public Health (MPH) program at Johns Hopkins University. With a solid foundation in medicine and a passion for addressing public health challenges, I am eager to enhance my expertise and contribute to impactful solutions. My career has been distinguished by my problem-solving abilities, organizational skills, punctuality, motivation, and cultural sensitivity—qualities that I believe align well with the values of your esteemed program.\nMy journey as a physician has honed my problem-solving skills, allowing me to effectively address conThank you for considering my application. I look forward to discussing how my experiences and goals align with the mission of Johns Hopkins University.\nSincerely, Dr. Michael Anderson\nAugust 21, 2024\n\n",
+        "researchProductsCount": 15,
+        "specialtyCount": 0,
+        "fNameCount": 1,
+        "peerReviewedCount": 2,
+        "abstractResearchCount": 0,
+        "publishedCount": 1
+    },
+      {
+        "name": "Samhgfina Billo",
+        "id":"9",
+        "researchScore": 37.3,
+        "sopScore": {
+            "characteristicsInSOP": [
+                "problem-solving abilities",
+                "organizational skills",
+                "punctuality",
+                "motivation",
+                "cultural sensitivity"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "lorScore": {
+            "characteristicsInLOR": [
+                "problem-solver",
+                "organized",
+                "punctual",
+                "motivated",
+                "culturally sensitive"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "pic": "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg",
+        "dob": "2024-08-01",
+        "medSchool": "Sam Bill High School and College",
+        "lor": [
+            "August 21, 2024\nAdmissions Committee\nJohns Hopkins University\nMaster of Public Health Program\n550 North Broadway\nBaltimore, MD 21205\nDear Members of the Admissions Committee,\nI am writing to enthusiastically recommend Dr. Michael Anderson for admission to the Master of Public Health (MPH) program at Johns Hopkins University. As Dr. Anderson’s supervisor at Greenwood Medical Center, I have had the pleasure of working closely with him for the past three years. During this time, Dr. Anderson has consistently demonstrated exceptional qualities that I believe make him an outstanding candidate for your program.\nDr. Anderson has shown remarkable problem-solving abilities throughout his tenure with us. His aptitude for diagnosing complex medical conditions and developing effective treatment plans is unparalleled. On numerous occasions, he has tackled intricate cases with a combination of analytical skill and creative thinking, resulting in improved patient outcomes and enhanced team performance. His problem-solving approach reflects both his deep understanding of medical science and his commitment to finding innovative solutions in challenging situations.\nIn addition to his problem-solving skills, Dr. Anderson is extraordinarily organized. His ability to manage multiple tasks efficiently, from patient care to administrative responsibilities, is a testament to his exceptional organizational skills. He maintains meticulous records, coordinates seamlessly with multidisciplinary teams, and ensures that all aspects of his work are completed with precision and attention to detail. This organizational prowess has been instrumental in streamlining processes and enhancing the overall efficiency of our department.\nPunctuality is another area where Dr. Anderson excels. His reliability in adhering to schedules and meeting deadlines is commendable. Whether in clinical settings or during team meetings, Dr. Anderson consistently arrives on time and is prepared to contribute meaningfully. This punctuality not only reflects his respect for others’ time but also underscores his commitment to maintaining high standards of professionalism.\nDr. Anderson’s motivation is a driving force behind his professional achievements. His dedication to advancing his knowledge, improving patient care, and contributing to public health is evident in his proactive approach to learning and development. He is always eager to take on new challenges, seek out additional training, and engage in research opportunities. His intrinsic motivation to excel and make a positive impact in the field of public health is truly inspiring.\nFurthermore, Dr. Anderson’s cultural sensitivity has significantly enhanced his effectiveness as a healthcare provider. He approaches patients from diverse backgrounds with respect and understanding, ensuring that care is delivered in a manner that is both inclusive and culturally appropriate. His ability to connect with individuals from various cultural contexts has fostered a supportive and compassionate environment for both patients and colleagues.\nIn summary, Dr. Michael Anderson possesses a unique blend of problem-solving skills, organizational acumen, punctuality, motivation, and cultural sensitivity that make him an exceptional candidate for the MPH program at Johns Hopkins University. I am confident that he will bring these strengths to your program and contribute positively to your academic community.\nThank you for considering this recommendation. Please feel free to contact me at (555) 123-4567 or s.roberts@greenwoodmed.com if you require any further information.\nSincerely,\nDr. Susan Roberts\nChief Medical Officer\nGreenwood Medical Center\n123 Healthway Avenue\nBaltimore, MD 21201\n(555) 123-4567\ns.roberts@greenwoodmed.com\n",
+            
+        ],
+        "sop": "Statement of Purpose:\nTo the Admissions Committee,\nI am excited to apply for the Master of Public Health (MPH) program at Johns Hopkins University. With a solid foundation in medicine and a passion for addressing public health challenges, I am eager to enhance my expertise and contribute to impactful solutions. My career has been distinguished by my problem-solving abilities, organizational skills, punctuality, motivation, and cultural sensitivity—qualities that I believe align well with the values of your esteemed program.\nMy journey as a physician has honed my problem-solving skills, allowing me to effectively address conThank you for considering my application. I look forward to discussing how my experiences and goals align with the mission of Johns Hopkins University.\nSincerely, Dr. Michael Anderson\nAugust 21, 2024\n\n",
+        "researchProductsCount": 15,
+        "specialtyCount": 0,
+        "fNameCount": 1,
+        "peerReviewedCount": 2,
+        "abstractResearchCount": 0,
+        "publishedCount": 1
+    },
+      {
+        "name": "Samina Billo",
+        "id":"11",
+        "researchScore": 43.3,
+        "sopScore": {
+            "characteristicsInSOP": [
+                "problem-solving abilities",
+                "organizational skills",
+                "punctuality",
+                "motivation",
+                "cultural sensitivity"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "lorScore": {
+            "characteristicsInLOR": [
+                "problem-solver",
+                "organized",
+                "punctual",
+                "motivated",
+                "culturally sensitive"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "pic": "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg",
+        "dob": "2024-08-01",
+        "medSchool": "Sam Bill High School and College",
+        "lor": [
+            "August 21, 2024\nAdmissions Committee\nJohns Hopkins University\nMaster of Public Health Program\n550 North Broadway\nBaltimore, MD 21205\nDear Members of the Admissions Committee,\nI am writing to enthusiastically recommend Dr. Michael Anderson for admission to the Master of Public Health (MPH) program at Johns Hopkins University. As Dr. Anderson’s supervisor at Greenwood Medical Center, I have had the pleasure of working closely with him for the past three years. During this time, Dr. Anderson has consistently demonstrated exceptional qualities that I believe make him an outstanding candidate for your program.\nDr. Anderson has shown remarkable problem-solving abilities throughout his tenure with us. His aptitude for diagnosing complex medical conditions and developing effective treatment plans is unparalleled. On numerous occasions, he has tackled intricate cases with a combination of analytical skill and creative thinking, resulting in improved patient outcomes and enhanced team performance. His problem-solving approach reflects both his deep understanding of medical science and his commitment to finding innovative solutions in challenging situations.\nIn addition to his problem-solving skills, Dr. Anderson is extraordinarily organized. His ability to manage multiple tasks efficiently, from patient care to administrative responsibilities, is a testament to his exceptional organizational skills. He maintains meticulous records, coordinates seamlessly with multidisciplinary teams, and ensures that all aspects of his work are completed with precision and attention to detail. This organizational prowess has been instrumental in streamlining processes and enhancing the overall efficiency of our department.\nPunctuality is another area where Dr. Anderson excels. His reliability in adhering to schedules and meeting deadlines is commendable. Whether in clinical settings or during team meetings, Dr. Anderson consistently arrives on time and is prepared to contribute meaningfully. This punctuality not only reflects his respect for others’ time but also underscores his commitment to maintaining high standards of professionalism.\nDr. Anderson’s motivation is a driving force behind his professional achievements. His dedication to advancing his knowledge, improving patient care, and contributing to public health is evident in his proactive approach to learning and development. He is always eager to take on new challenges, seek out additional training, and engage in research opportunities. His intrinsic motivation to excel and make a positive impact in the field of public health is truly inspiring.\nFurthermore, Dr. Anderson’s cultural sensitivity has significantly enhanced his effectiveness as a healthcare provider. He approaches patients from diverse backgrounds with respect and understanding, ensuring that care is delivered in a manner that is both inclusive and culturally appropriate. His ability to connect with individuals from various cultural contexts has fostered a supportive and compassionate environment for both patients and colleagues.\nIn summary, Dr. Michael Anderson possesses a unique blend of problem-solving skills, organizational acumen, punctuality, motivation, and cultural sensitivity that make him an exceptional candidate for the MPH program at Johns Hopkins University. I am confident that he will bring these strengths to your program and contribute positively to your academic community.\nThank you for considering this recommendation. Please feel free to contact me at (555) 123-4567 or s.roberts@greenwoodmed.com if you require any further information.\nSincerely,\nDr. Susan Roberts\nChief Medical Officer\nGreenwood Medical Center\n123 Healthway Avenue\nBaltimore, MD 21201\n(555) 123-4567\ns.roberts@greenwoodmed.com\n",
+            
+        ],
+        "sop": "Statement of Purpose:\nTo the Admissions Committee,\nI am excited to apply for the Master of Public Health (MPH) program at Johns Hopkins University. With a solid foundation in medicine and a passion for addressing public health challenges, I am eager to enhance my expertise and contribute to impactful solutions. My career has been distinguished by my problem-solving abilities, organizational skills, punctuality, motivation, and cultural sensitivity—qualities that I believe align well with the values of your esteemed program.\nMy journey as a physician has honed my problem-solving skills, allowing me to effectively address conThank you for considering my application. I look forward to discussing how my experiences and goals align with the mission of Johns Hopkins University.\nSincerely, Dr. Michael Anderson\nAugust 21, 2024\n\n",
+        "researchProductsCount": 15,
+        "specialtyCount": 0,
+        "fNameCount": 1,
+        "peerReviewedCount": 2,
+        "abstractResearchCount": 0,
+        "publishedCount": 1
+    },
+      {
+        "name": "Samixna Billo",
+        "id":"12",
+        "researchScore": 70.3,
+        "sopScore": {
+            "characteristicsInSOP": [
+                "problem-solving abilities",
+                "organizational skills",
+                "punctuality",
+                "motivation",
+                "cultural sensitivity"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "lorScore": {
+            "characteristicsInLOR": [
+                "problem-solver",
+                "organized",
+                "punctual",
+                "motivated",
+                "culturally sensitive"
+            ],
+            "matchedCharacteristics": "5/5"
+        },
+        "pic": "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg",
+        "dob": "2024-08-01",
+        "medSchool": "Sam Bill High School and College",
+        "lor": [
+            "August 21, 2024\nAdmissions Committee\nJohns Hopkins University\nMaster of Public Health Program\n550 North Broadway\nBaltimore, MD 21205\nDear Members of the Admissions Committee,\nI am writing to enthusiastically recommend Dr. Michael Anderson for admission to the Master of Public Health (MPH) program at Johns Hopkins University. As Dr. Anderson’s supervisor at Greenwood Medical Center, I have had the pleasure of working closely with him for the past three years. During this time, Dr. Anderson has consistently demonstrated exceptional qualities that I believe make him an outstanding candidate for your program.\nDr. Anderson has shown remarkable problem-solving abilities throughout his tenure with us. His aptitude for diagnosing complex medical conditions and developing effective treatment plans is unparalleled. On numerous occasions, he has tackled intricate cases with a combination of analytical skill and creative thinking, resulting in improved patient outcomes and enhanced team performance. His problem-solving approach reflects both his deep understanding of medical science and his commitment to finding innovative solutions in challenging situations.\nIn addition to his problem-solving skills, Dr. Anderson is extraordinarily organized. His ability to manage multiple tasks efficiently, from patient care to administrative responsibilities, is a testament to his exceptional organizational skills. He maintains meticulous records, coordinates seamlessly with multidisciplinary teams, and ensures that all aspects of his work are completed with precision and attention to detail. This organizational prowess has been instrumental in streamlining processes and enhancing the overall efficiency of our department.\nPunctuality is another area where Dr. Anderson excels. His reliability in adhering to schedules and meeting deadlines is commendable. Whether in clinical settings or during team meetings, Dr. Anderson consistently arrives on time and is prepared to contribute meaningfully. This punctuality not only reflects his respect for others’ time but also underscores his commitment to maintaining high standards of professionalism.\nDr. Anderson’s motivation is a driving force behind his professional achievements. His dedication to advancing his knowledge, improving patient care, and contributing to public health is evident in his proactive approach to learning and development. He is always eager to take on new challenges, seek out additional training, and engage in research opportunities. His intrinsic motivation to excel and make a positive impact in the field of public health is truly inspiring.\nFurthermore, Dr. Anderson’s cultural sensitivity has significantly enhanced his effectiveness as a healthcare provider. He approaches patients from diverse backgrounds with respect and understanding, ensuring that care is delivered in a manner that is both inclusive and culturally appropriate. His ability to connect with individuals from various cultural contexts has fostered a supportive and compassionate environment for both patients and colleagues.\nIn summary, Dr. Michael Anderson possesses a unique blend of problem-solving skills, organizational acumen, punctuality, motivation, and cultural sensitivity that make him an exceptional candidate for the MPH program at Johns Hopkins University. I am confident that he will bring these strengths to your program and contribute positively to your academic community.\nThank you for considering this recommendation. Please feel free to contact me at (555) 123-4567 or s.roberts@greenwoodmed.com if you require any further information.\nSincerely,\nDr. Susan Roberts\nChief Medical Officer\nGreenwood Medical Center\n123 Healthway Avenue\nBaltimore, MD 21201\n(555) 123-4567\ns.roberts@greenwoodmed.com\n",
+            
+        ],
+        "sop": "Statement of Purpose:\nTo the Admissions Committee,\nI am excited to apply for the Master of Public Health (MPH) program at Johns Hopkins University. With a solid foundation in medicine and a passion for addressing public health challenges, I am eager to enhance my expertise and contribute to impactful solutions. My career has been distinguished by my problem-solving abilities, organizational skills, punctuality, motivation, and cultural sensitivity—qualities that I believe align well with the values of your esteemed program.\nMy journey as a physician has honed my problem-solving skills, allowing me to effectively address conThank you for considering my application. I look forward to discussing how my experiences and goals align with the mission of Johns Hopkins University.\nSincerely, Dr. Michael Anderson\nAugust 21, 2024\n\n",
+        "researchProductsCount": 15,
+        "specialtyCount": 0,
+        "fNameCount": 1,
+        "peerReviewedCount": 2,
+        "abstractResearchCount": 0,
+        "publishedCount": 1
+    },
+    
 ])
   },[])
 
@@ -955,10 +1394,11 @@ const openPDFInNewTab = (item, index, result) => {
                 <th className={selectedProperty==="research"? `${styles.selectedProperty}`:`${styles.cursorPointer}`}
                 onClick={()=>handleSort("research")}
                 >Research Rating</th>
-                <th className={selectedProperty==="pref"? `${styles.selectedProperty}`: `${styles.cursorPointer}`} 
-                onClick={()=>handleSort("pref")}
+                <th className={selectedProperty==="sopScore"? `${styles.selectedProperty}`: `${styles.cursorPointer}`} 
+                onClick={()=>handleSort("sopScore")}
                 >Personal Statement Rating</th>
-                <th >LOR Rating</th>
+                <th className={selectedProperty==="lorScore"? `${styles.selectedProperty}`: `${styles.cursorPointer}`} 
+                onClick={()=>handleSort("lorScore")}>LOR Rating</th>
                 <th >Report</th>
                 </tr>
               </thead>
@@ -968,11 +1408,11 @@ const openPDFInNewTab = (item, index, result) => {
             <tr  key={index}>
               <td className={styles.mainHeader1}>{index+1}</td>
               <td className={styles.mainHeader2}>{item.name}</td>
-              <td className={styles.mainHeader2}>{item.medSchool}</td>
-              <td className={styles.mainHeader3}>{item.researchScore.toFixed(1)}</td>
-              <td className={styles.mainHeader3}>{item.sopScore.matchedCharacteristics}</td>
-              <td className={styles.mainHeader3}>{item.lorScore.matchedCharacteristics}</td>
-              <td className={styles.mainHeader3}> <a href="#" onClick={()=>openPDFInNewTab(item,index,result)}>Report</a></td>
+              <td className={styles.mainHeader3}>{item.medSchool}</td>
+              <td className={styles.mainHeader4}>{item.researchScore.toFixed(1)}</td>
+              <td className={styles.mainHeader5}>{item.sopScore.matchedCharacteristics}</td>
+              <td className={styles.mainHeader6}>{item.lorScore.matchedCharacteristics}</td>
+              <td className={styles.mainHeader7}> <a href="#" onClick={()=>openPDFInNewTab(item,index,result)}>Report</a></td>
             </tr>
                 
             ))}
