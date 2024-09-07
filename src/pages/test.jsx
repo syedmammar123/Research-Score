@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import {impactData} from '../components/Result/ImpactFactor'
-
+import { impactData } from '../data/ImpactFactor'
 const test = () => {
   const [search,setSearch] = useState('')
   const [searchRes,setSearchRes] = useState('')
