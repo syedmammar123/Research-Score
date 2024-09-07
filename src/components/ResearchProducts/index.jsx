@@ -246,9 +246,10 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
             lName,
             researchProducts: [...prod],
 
-            sop: currentSop != "" ? currentSop : "No SOP Found!",
+            sop: currentSop.replace(/\n+/g, '\n'),
             
-            lors:   currentLors.filter(item => item !== ''),
+            lors:   currentLors.filter(item => item !== '')
+                    .map(item => item.replace(/\n+/g, '\n')),
 
             collegeName: currentCollegeName,
             dob:currentDob,
@@ -473,7 +474,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                     </div>
 
                     <div className={styles.addPhotoDiv}>
-                        <UploadStudentImage onImageUpload = {handleImageUpload} resetKey={resetImageCompKey}/>
+                        <UploadStudentImage onImageUpload = {handleImageUpload} key={resetImageCompKey}/>
                     </div>
                     
                     <div className={styles.prodNoDiv}>
@@ -573,7 +574,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                                 rows={20}
                                 value={currentSop}
                                 onChange={(e) => setCurrentSop(e.target.value)}
-                                placeholder="Enter SOP"
+                                placeholder="Enter the statement of purpose here!"
                                 className={styles.textAreaInput}
                             />
                         </h3>

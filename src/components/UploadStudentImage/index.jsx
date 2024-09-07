@@ -3,7 +3,7 @@ import styles from './index.module.css';
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 
-const UploadStudentImage = ({ onImageUpload,resetKey }) => {
+const UploadStudentImage = ({ onImageUpload }) => {
     const [imageUrl, setImageUrl] = useState(null);
 
     const storage = getStorage();
