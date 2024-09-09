@@ -22,10 +22,10 @@ const Result = ( {userData,rating,stdData}) => {
   
   },[])
 
-  // useEffect(()=>{
-  //   setLoading(false)
-  //   setResult(dummyResult)
-  // },[])
+  useEffect(()=>{
+    setLoading(false)
+    setResult(dummyResult)
+  },[])
   
   const calculations = async ()=>{
     const totalRating = Object.values(rating).reduce((acc,curr)=>acc+curr,0)

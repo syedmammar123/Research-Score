@@ -243,10 +243,10 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
             lName,
             researchProducts: [...prod],
 
-            sop: currentSop.replace(/\n+/g, '\n'),
+            sop: currentSop.replace(/\n{2,}/g, '\n'),
             
             lors:   currentLors.filter(item => item !== '')
-                    .map(item => item.replace(/\n+/g, '\n')),
+                    .map(item => item.replace(/\n{2,}/g, '\n')),
 
             collegeName: currentCollegeName,
             dob:currentDob,
