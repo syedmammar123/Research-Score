@@ -239,14 +239,30 @@ import { impactData } from "../data/ImpactFactor";
           
     //   }
     // );
+    let user_message = `Program Values: ${programValues} \n
+
+    Statement of Purpose: \n
+    ${sop}
+
+    Instructions:
+    1. Extract all characteristics mentioned in the Statment of Purpose.
+    2. Compare these characteristics with the program values.
+    3. Provide the response in the following JSON format:
+
+    {{
+      "characteristicsInSOP": [list of characteristics],
+      "matchedCharacteristics": "number of matched characteristics/total number of program values"
+    }}
+    `
 
     
     const message = await openai.beta.threads.messages.create(
       import.meta.env.VITE_THREAD_ID_3,
       {
         role: "user",
-        content: `Valued characteristics: ${programValues}\n
-                  Statement of Purpose: \n${sop} `
+        content: user_message
+        // content: `Valued characteristics: ${programValues}\n
+        //           Statement of Purpose: \n${sop} `
     })
 
     const run = await openai.beta.threads.runs.create(
