@@ -521,9 +521,24 @@ export const createPdf = (item, index, result) => {
               // });
               
               // Generate the PDF and open it in a new tab
-              const pdfBlob = doc.output('blob');
-              const url = URL.createObjectURL(pdfBlob);
-              window.open(url, '_blank');   
+               const pdfBlob = doc.output('blob'); 
+                const url = URL.createObjectURL(pdfBlob); // Create blob URL
+
+                // Create a new anchor element programmatically
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';  // Open in a new tab
+
+                // iOS specific hack: Append the link to the DOM for iOS Safari compatibility
+                document.body.appendChild(link);
+
+                link.click();  // Simulate a user click to trigger window.open or download
+
+                // Clean up by removing the anchor element after triggering the download/view
+                document.body.removeChild(link);
+              // const pdfBlob = doc.output('blob');
+              // const url = URL.createObjectURL(pdfBlob);
+              // window.open(url, '_blank');   
         
           }, 1000); 
         }catch(error){
