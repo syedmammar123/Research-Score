@@ -519,7 +519,7 @@ export const createPdf = (item, index, result) => {
               //     doc.text(`${index + 1}. ${char}`, 20, sopY);
               //     sopY += 5;
               // });
-              doc.save('Report.pdf');
+              doc.save(`${item.name} Report.pdf`);
               
               // // Generate the PDF and open it in a new tab
               //  const pdfBlob = doc.output('blob'); 
