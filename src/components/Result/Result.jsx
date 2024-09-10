@@ -179,7 +179,7 @@ const Result = ( {userData,rating,stdData}) => {
               <td className={styles.mainHeader4}>{item.researchScore.toFixed(1)}</td>
               <td className={styles.mainHeader5}>{item.sopScore.matchedCharacteristics}</td>
               <td className={styles.mainHeader6}>{item.lorScore.matchedCharacteristics}</td>
-              <td className={styles.mainHeader7}> <a href="#" onClick={()=>createPdf(item,index,result)}>Report</a></td>
+              <td className={styles.mainHeader7}> <a href="javascript:void(0);" onClick={()=>createPdf(item,index,result)}>Report</a></td>
             </tr>
                 
             ))}
