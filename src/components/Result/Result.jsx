@@ -17,15 +17,15 @@ const Result = ( {userData,rating,stdData}) => {
   // var userSpecialty = "Radiology"
   // var userSpecialty = "Neurology"
 
-  useEffect(()=>{
-    calculations()
-  
-  },[])
-
   // useEffect(()=>{
-  //   setLoading(false)
-  //   setResult(dummyResult)
+  //   calculations()
+  
   // },[])
+
+  useEffect(()=>{
+    setLoading(false)
+    setResult(dummyResult)
+  },[])
   
   const calculations = async ()=>{
     const totalRating = Object.values(rating).reduce((acc,curr)=>acc+curr,0)
