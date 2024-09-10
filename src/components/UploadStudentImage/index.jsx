@@ -28,8 +28,7 @@ const UploadStudentImage = ({ onImageUpload }) => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: "center", width: "100%" }}>
-            <div style={{ marginTop: "10px" }}>
+            <div  className={styles.mainDivOfImage}>
                 <label htmlFor="uploadPicture" style={{ display: "block", marginBottom: "0px", fontSize: "14px", paddingLeft: "0px" }}>
                     Upload Picture:
                 </label>
@@ -46,7 +45,6 @@ const UploadStudentImage = ({ onImageUpload }) => {
                      <img src={imageUrl} width="100px" height="100px" style={{ borderRadius: "10px" }} alt="Uploaded student" />
                 </div>}
             </div>
-        </div>
     );
 }
 

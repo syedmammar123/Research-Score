@@ -470,9 +470,9 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
                           {/* Add Picture Field */}                   
                     </div>
 
-                    <div className={styles.addPhotoDiv}>
+                    {/* <div className={styles.addPhotoDiv}> */}
                         <UploadStudentImage onImageUpload = {handleImageUpload} key={resetImageCompKey}/>
-                    </div>
+                    {/* </div> */}
                     
                     <div className={styles.prodNoDiv}>
                         <span>Research Product <b>{prodNo}</b> :</span>
