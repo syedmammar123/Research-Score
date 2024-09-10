@@ -519,24 +519,24 @@ export const createPdf = (item, index, result) => {
               //     doc.text(`${index + 1}. ${char}`, 20, sopY);
               //     sopY += 5;
               // });
-              doc.save(`${item.name} Report.pdf`);
+              // doc.save(`${item.name} Report.pdf`);
               
-              // // Generate the PDF and open it in a new tab
-              //  const pdfBlob = doc.output('blob'); 
-              //   const url = URL.createObjectURL(pdfBlob); // Create blob URL
+              // Generate the PDF and open it in a new tab
+               const pdfBlob = doc.output('blob'); 
+                const url = URL.createObjectURL(pdfBlob); // Create blob URL
 
-              //   // Create a new anchor element programmatically
-              //   const link = document.createElement('a');
-              //   link.href = url;
-              //   link.target = '_blank';  // Open in a new tab
+                // Create a new anchor element programmatically
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';  // Open in a new tab
 
-              //   // iOS specific hack: Append the link to the DOM for iOS Safari compatibility
-              //   document.body.appendChild(link);
+                // iOS specific hack: Append the link to the DOM for iOS Safari compatibility
+                document.body.appendChild(link);
 
-              //   link.click();  // Simulate a user click to trigger window.open or download
+                link.click();  // Simulate a user click to trigger window.open or download
 
-              //   // Clean up by removing the anchor element after triggering the download/view
-              //   document.body.removeChild(link);
+                // Clean up by removing the anchor element after triggering the download/view
+                document.body.removeChild(link);
               // const pdfBlob = doc.output('blob');
               // const url = URL.createObjectURL(pdfBlob);
               // window.open(url, '_blank');   
