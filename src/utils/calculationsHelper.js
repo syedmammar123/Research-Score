@@ -246,13 +246,15 @@ import  {charList}  from "../data/charateristicsList";
     ${sop}
 
     Instructions:
-    1. Extract the top three characteristics mentioned in the Statment of Purpose from the provided list: ${charList}
+    1. 1.Extract the top three characteristics mentioned in the Statment of Purpose, but only if they match the characteristics from the provided list: 
+     ${charList}
     2. Compare these characteristics with the program values.
     3. Provide the response in the following JSON format:
 
     {{
       "characteristicsInSOP": [list of all three characteristics],
-      "matchedCharacteristics": "number of matched characteristics/total number of program values"
+      "matchedCharacteristics": "number of matched characteristics/total number of program values",
+      "matchedCharateristicsProof": {"The matched Characteristic": "The characteristic in program value to which it is matched"}
     }}
     `
 
@@ -315,13 +317,15 @@ Letters of Recommendation:
 ${refinedLors}
 
 Instructions:
-1.Extract the top five characteristics mentioned in the Letters of Recommendations (LORs) from the provided list:  ${charList}.
+1.Extract the top five characteristics mentioned in the Letters of Recommendation (LORs), but only if they match the characteristics from the provided list: 
+${charList}.
 2. Compare these characteristics with the program values.
 3. Provide the response in the following JSON format:
 
 {{
   "characteristicsInLOR": [list of top five characteristics],
-  "matchedCharacteristics": "number of matched characteristics/total number of program values"
+  "matchedCharacteristics": "number of matched characteristics/total number of program values",
+  "matchedCharateristicsProof": {"The matched Characteristic": "The characteristic in program value to which it is matched"}
 }}
 `
 
