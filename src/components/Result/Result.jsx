@@ -19,7 +19,6 @@ const Result = ( {userData,rating,stdData}) => {
 
   useEffect(()=>{
     calculations()
-  
   },[])
 
   // useEffect(()=>{

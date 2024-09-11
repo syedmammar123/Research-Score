@@ -36,7 +36,7 @@ const ProductInfo = ({userData,ratings,characteristics}) => {
     
     const [currentStudentPhoto, setCurrentStudentPhoto] = useState(blankPictureUrl);
     const [currentDob, setCurrentDob] = useState();
-    const [currentCollegeName, setCurrentCollegeName] = useState();
+    const [currentCollegeName, setCurrentCollegeName] = useState("");
     const [resetImageCompKey, setResetImageCompKey] = useState(0);
 
 

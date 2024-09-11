@@ -156,7 +156,7 @@ export const createPdf = (item, index, result) => {
             pointRadius: function(context) {
               const { dataIndex } = context;
               console.log(range[dataIndex],selectedScore)
-              return range[dataIndex] === selectedScore ? 4 : 0; // Dot only for the selected student's score
+              return range[dataIndex] === Number(selectedScore.toFixed(1)) ? 4 : 0; // Dot only for the selected student's score
             },
             pointHoverRadius: 4,
             pointBackgroundColor: 'rgba(255, 99, 132, 1)',

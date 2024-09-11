@@ -245,12 +245,12 @@ import { impactData } from "../data/ImpactFactor";
     ${sop}
 
     Instructions:
-    1. Extract all characteristics mentioned in the Statment of Purpose.
+    1. Extract top three characteristics mentioned in the Statment of Purpose.
     2. Compare these characteristics with the program values.
     3. Provide the response in the following JSON format:
 
     {{
-      "characteristicsInSOP": [list of characteristics],
+      "characteristicsInSOP": [list of all three characteristics],
       "matchedCharacteristics": "number of matched characteristics/total number of program values"
     }}
     `
@@ -314,12 +314,12 @@ Letters of Recommendation:
 ${refinedLors}
 
 Instructions:
-1. Extract all characteristics mentioned in the Letters of Recommendation.
+1. Extract top five characteristics mentioned in the Letters of Recommendations.
 2. Compare these characteristics with the program values.
 3. Provide the response in the following JSON format:
 
 {{
-  "characteristicsInLOR": [list of characteristics],
+  "characteristicsInLOR": [list of top five characteristics],
   "matchedCharacteristics": "number of matched characteristics/total number of program values"
 }}
 `
