@@ -246,7 +246,7 @@ import  {charList}  from "../data/charateristicsList";
     ${sop}
 
     Instructions:
-    1. 1.Extract the top three characteristics mentioned in the Statment of Purpose, but only if they match the characteristics from the provided list: 
+    1. 1.Extract the top three characteristics mentioned in the Statment of Purpose, but only if they exactly word to word match the characteristics from the provided list: 
      ${charList}
     2. Compare these characteristics with the program values.
     3. Provide the response in the following JSON format:
@@ -317,7 +317,7 @@ Letters of Recommendation:
 ${refinedLors}
 
 Instructions:
-1.Extract the top five characteristics mentioned in the Letters of Recommendation (LORs), but only if they match the characteristics from the provided list: 
+1.Extract the top five characteristics mentioned in the Letters of Recommendation (LORs), but only if they exactly word to word match the characteristics from the provided list: 
 ${charList}.
 2. Compare these characteristics with the program values.
 3. Provide the response in the following JSON format:
