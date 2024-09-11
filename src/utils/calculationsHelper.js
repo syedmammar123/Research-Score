@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { sleep } from "openai/core";
 import { impactData } from "../data/ImpactFactor";
+import  {charList}  from "../data/charateristicsList";
   
 
   const openai = new OpenAI({
@@ -245,7 +246,7 @@ import { impactData } from "../data/ImpactFactor";
     ${sop}
 
     Instructions:
-    1. Extract top three characteristics mentioned in the Statment of Purpose.
+    1. Extract the top three characteristics mentioned in the Statment of Purpose from the provided list: ${charList}
     2. Compare these characteristics with the program values.
     3. Provide the response in the following JSON format:
 
@@ -314,7 +315,7 @@ Letters of Recommendation:
 ${refinedLors}
 
 Instructions:
-1. Extract top five characteristics mentioned in the Letters of Recommendations.
+1.Extract the top five characteristics mentioned in the Letters of Recommendations (LORs) from the provided list:  ${charList}.
 2. Compare these characteristics with the program values.
 3. Provide the response in the following JSON format:
 
