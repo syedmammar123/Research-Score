@@ -258,27 +258,33 @@ import  {charList}  from "../data/charateristicsList";
     }}
     `
 
+    const thread = await openai.beta.threads.create();
+
     
     const message = await openai.beta.threads.messages.create(
-      import.meta.env.VITE_THREAD_ID_3,
+      // import.meta.env.VITE_THREAD_ID_3,
+      thread.id,
       {
         role: "user",
         // content: user_message
-        content: `Valued characteristics: ${programValues}\n
+        content: `Program Valued characteristics: ${programValues}\n
                   Statement of Purpose: \n${sop} `
     })
 
     const run = await openai.beta.threads.runs.create(
-      import.meta.env.VITE_THREAD_ID_3,
+      // import.meta.env.VITE_THREAD_ID_3,
+      thread.id,
     { 
       assistant_id:import.meta.env.VITE_ASST_ID_3
     }
     );
 
-    const status = await statusCheckLoop(import.meta.env.VITE_THREAD_ID_3, run.id);
+    // const status = await statusCheckLoop(import.meta.env.VITE_THREAD_ID_3, run.id);
+    const status = await statusCheckLoop(thread.id, run.id);
 
     const messages = await openai.beta.threads.messages.list(
-      import.meta.env.VITE_THREAD_ID_3,
+      // import.meta.env.VITE_THREAD_ID_3,
+      thread.id,
     );
     let response = messages.data[0].content[0].text.value;
     
@@ -328,11 +334,13 @@ ${charList}.
   "matchedCharateristicsProof": {"The matched Characteristic": "The characteristic in program value to which it is matched"}
 }}
 `
+    const thread = await openai.beta.threads.create();
 
 
     
     const message = await openai.beta.threads.messages.create(
-      import.meta.env.VITE_THREAD_ID_4,
+      // import.meta.env.VITE_THREAD_ID_4,
+      thread.id,
     {
       role: "user",
       content: `Valued characteristics: ${programValues}\n
@@ -341,19 +349,21 @@ ${charList}.
     })
 
     const run = await openai.beta.threads.runs.create(
-      import.meta.env.VITE_THREAD_ID_4,
+      // import.meta.env.VITE_THREAD_ID_4,
+      thread.id,
     { 
       assistant_id:import.meta.env.VITE_ASST_ID_4
     }
     );
 
-    const status = await statusCheckLoop(import.meta.env.VITE_THREAD_ID_4, run.id);
+    // const status = await statusCheckLoop(import.meta.env.VITE_THREAD_ID_4, run.id);
+    const status = await statusCheckLoop(thread.id, run.id);
 
     const messages = await openai.beta.threads.messages.list(
-      import.meta.env.VITE_THREAD_ID_4,
+      // import.meta.env.VITE_THREAD_ID_4,
+      thread.id,
     );
     let response = messages.data[0].content[0].text.value;
-    console.log(response);
 
     return JSON.parse(response);
   }
