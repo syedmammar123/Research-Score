@@ -263,9 +263,9 @@ import  {charList}  from "../data/charateristicsList";
       import.meta.env.VITE_THREAD_ID_3,
       {
         role: "user",
-        content: user_message
-        // content: `Valued characteristics: ${programValues}\n
-        //           Statement of Purpose: \n${sop} `
+        // content: user_message
+        content: `Valued characteristics: ${programValues}\n
+                  Statement of Purpose: \n${sop} `
     })
 
     const run = await openai.beta.threads.runs.create(
@@ -335,9 +335,9 @@ ${charList}.
       import.meta.env.VITE_THREAD_ID_4,
     {
       role: "user",
-      // content: `Valued characteristics: ${programValues}\n
-      //             Letter of Recommendations: \n${refinedLors} `
-      content:user_message
+      content: `Valued characteristics: ${programValues}\n
+                  Letter of Recommendations: \n${refinedLors} `
+      // content:user_message
     })
 
     const run = await openai.beta.threads.runs.create(
