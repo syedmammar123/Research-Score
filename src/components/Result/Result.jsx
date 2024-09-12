@@ -70,8 +70,8 @@ const Result = ( {userData,rating,stdData}) => {
       let sopScore = await sopInfo(rating.selectedCheckboxes,currentStd.sop)
       let lorScore = await lorInfo(rating.selectedCheckboxes, currentStd.lors);    
       
-      console.log("Sop Score ",sopScore?.matchedCharacteristics)
-      console.log("Lor scores",lorScore?.matchedCharacteristics)
+      console.log("Sop Score ",sopScore)
+      console.log("Lor scores",lorScore)
 
       let final = {
         name:currentStd.fName+" "+currentStd.lName,

@@ -245,17 +245,144 @@ import  {charList}  from "../data/charateristicsList";
     Statement of Purpose: \n
     ${sop}
 
-    Instructions:
-    1. 1.Extract the top three characteristics mentioned in the Statment of Purpose, but only if they exactly word to word match the characteristics from the provided list: 
-     ${charList}
-    2. Compare these characteristics with the program values.
-    3. Provide the response in the following JSON format:
+    Instructions for Processing Statement of Purpose (SOP):
 
-    {{
-      "characteristicsInSOP": [list of all three characteristics],
-      "matchedCharacteristics": "number of matched characteristics/total number of program values",
-      "matchedCharateristicsProof": {"The matched Characteristic": "The characteristic in program value to which it is matched"}
-    }}
+    I am providing you with a Statement of Purpose for a student. Please perform the following tasks:
+
+    1. Extract Characteristics:
+      - Read the Statement of Purpose in full.
+      - Identify the top three characteristics described in the Statement of purpose. Match these characteristics to the provided list of 100 characteristics, ensuring that only terms from this list are used. If the Statement of purpose describes a characteristic not on the list but has a synonym on the list, use the synonym from the list.
+
+      List of Characteristics:
+      1. Compassionate
+      2. Empathetic
+      3. Patient
+      4. Detail-oriented
+      5. Dependable
+      6. Adaptable
+      7. Strong work ethic
+      8. Team player
+      9. Good communicator
+      10. Resilient
+      11. Critical thinker
+      12. Problem-solver
+      13. Organized
+      14. Punctual
+      15. Motivated
+      16. Culturally sensitive
+      17. Good listener
+      18. Open-minded
+      19. Professional
+      20. Honest
+      21. Respectful
+      22. Calm under pressure
+      23. Dedicated
+      24. Willing to learn
+      25. Self-aware
+      26. Self-directed
+      27. Ethical
+      28. Caring
+      29. Confident
+      30. Strong clinical skills
+      31. Good bedside manner
+      32. Able to multitask
+      33. Reliable
+      34. Good judgment
+      35. Resourceful
+      36. Emotionally intelligent
+      37. Physically resilient
+      38. Emotionally resilient
+      39. Strong interpersonal skills
+      40. Adaptable to technology
+      41. Knowledgeable
+      42. Energetic
+      43. Enthusiastic
+      44. Approachable
+      45. Humility
+      46. Curious
+      47. Efficient
+      48. Proactive
+      49. Good time management
+      50. Flexible
+      51. Positive attitude
+      52. Focused
+      53. Attention to detail
+      54. Strong leadership skills
+      55. Collaborative
+      56. Good writing skills
+      57. Diplomatic
+      58. Good sense of humor
+      59. Courageous
+      60. Strong decision-maker
+      61. Practical
+      62. Innovative
+      63. Good problem prioritization
+      64. Supportive
+      65. Good teaching skills
+      66. Analytical
+      67. Good self-care practices
+      68. Self-reflective
+      69. Respects patient autonomy
+      70. Good at delegation
+      71. Ethically-minded
+      72. Understands patient confidentiality
+      73. Handles criticism well
+      74. Persistent
+      75. Loyal
+      76. Mentor-oriented
+      77. Good public speaking skills
+      78. Compassion for coworkers
+      79. Strong commitment to patient care
+      80. Values teamwork
+      81. Knowledgeable about latest research
+      82. Nonjudgmental
+      83. Works well under supervision
+      84. Adheres to protocols
+      85. Good self-discipline
+      86. Clear communicator
+      87. Good at building rapport
+      88. Intellectually curious
+      89. Accountable
+      90. Takes initiative
+      91. Handles conflict well
+      92. Good organizational skills
+      93. Detail-focused in documentation
+      94. Proficient in medical procedures
+      95. Good hand-eye coordination
+      96. Emotionally stable
+      97. Good at managing stress
+      98. Good at prioritizing tasks
+      99. Values continuous improvement
+      100. Committed to lifelong learning
+
+    2. Match Characteristics:
+      - Compare the extracted characteristics with the list of program values provided.
+      - Count how many of the extracted characteristics match the program values.
+
+    Response Format:
+    Please provide your response in the following JSON format:
+    {
+      "characteristicsInSOP": [
+        // List the top three characteristics identified in the Statement of Purpose that match the list
+      ],
+      "matchedCharacteristics": "number of characteristics matched/total number of program values",
+      "matchedCharacteristicsProof": {
+        "The matched Characteristic": "The characteristic in program value which is used to match"
+      }
+    }
+
+    Example:
+    If the program values are "motivated, hardworking, collaborative" and the Statement of Purpose mentions "motivated, hardworking, and creative", but "creative" is not on the list, use the synonym "innovative" from the list instead:
+
+    {
+      "characteristicsInSOP": ["motivated", "hardworking", "innovative"],
+      "matchedCharacteristics": "2/3",
+      "matchedCharacteristicsProof": {
+        "motivated": "motivated",
+        "hardworking": "hardworking"
+      }
+    }
+
     `
 
     const thread = await openai.beta.threads.create();
@@ -266,9 +393,9 @@ import  {charList}  from "../data/charateristicsList";
       thread.id,
       {
         role: "user",
-        // content: user_message
-        content: `Program Valued characteristics: ${programValues}\n
-                  Statement of Purpose: \n${sop} `
+        content: user_message
+        // content: `Program Valued characteristics: ${programValues}\n
+        //           Statement of Purpose: \n${sop} `
     })
 
     const run = await openai.beta.threads.runs.create(
@@ -319,21 +446,149 @@ import  {charList}  from "../data/charateristicsList";
 
     let user_message = `Program Values: ${programValues}
 
-Letters of Recommendation:
-${refinedLors}
+    Letters of Recommendation:
+    ${refinedLors}
 
-Instructions:
-1.Extract the top five characteristics mentioned in the Letters of Recommendation (LORs), but only if they exactly word to word match the characteristics from the provided list: 
-${charList}.
-2. Compare these characteristics with the program values.
-3. Provide the response in the following JSON format:
+    Instructions for Processing Letter of Recommendation (LOR):
 
-{{
-  "characteristicsInLOR": [list of top five characteristics],
-  "matchedCharacteristics": "number of matched characteristics/total number of program values",
-  "matchedCharateristicsProof": {"The matched Characteristic": "The characteristic in program value to which it is matched"}
-}}
-`
+    I am providing you with a Letters of Recommendation for a student. Please perform the following tasks:
+
+    1. Extract Characteristics:
+      - Read the Letters of Recommendation in full.
+      - Identify the top five characteristics described in the letters. Match these characteristics to the provided list of 100 characteristics, ensuring that only terms from this list are used. If the letter describes a characteristic not on the list but has a synonym on the list, use the synonym from the list.
+      
+      List of Characteristics:
+      1. Compassionate
+      2. Empathetic
+      3. Patient
+      4. Detail-oriented
+      5. Dependable
+      6. Adaptable
+      7. Strong work ethic
+      8. Team player
+      9. Good communicator
+      10. Resilient
+      11. Critical thinker
+      12. Problem-solver
+      13. Organized
+      14. Punctual
+      15. Motivated
+      16. Culturally sensitive
+      17. Good listener
+      18. Open-minded
+      19. Professional
+      20. Honest
+      21. Respectful
+      22. Calm under pressure
+      23. Dedicated
+      24. Willing to learn
+      25. Self-aware
+      26. Self-directed
+      27. Ethical
+      28. Caring
+      29. Confident
+      30. Strong clinical skills
+      31. Good bedside manner
+      32. Able to multitask
+      33. Reliable
+      34. Good judgment
+      35. Resourceful
+      36. Emotionally intelligent
+      37. Physically resilient
+      38. Emotionally resilient
+      39. Strong interpersonal skills
+      40. Adaptable to technology
+      41. Knowledgeable
+      42. Energetic
+      43. Enthusiastic
+      44. Approachable
+      45. Humility
+      46. Curious
+      47. Efficient
+      48. Proactive
+      49. Good time management
+      50. Flexible
+      51. Positive attitude
+      52. Focused
+      53. Attention to detail
+      54. Strong leadership skills
+      55. Collaborative
+      56. Good writing skills
+      57. Diplomatic
+      58. Good sense of humor
+      59. Courageous
+      60. Strong decision-maker
+      61. Practical
+      62. Innovative
+      63. Good problem prioritization
+      64. Supportive
+      65. Good teaching skills
+      66. Analytical
+      67. Good self-care practices
+      68. Self-reflective
+      69. Respects patient autonomy
+      70. Good at delegation
+      71. Ethically-minded
+      72. Understands patient confidentiality
+      73. Handles criticism well
+      74. Persistent
+      75. Loyal
+      76. Mentor-oriented
+      77. Good public speaking skills
+      78. Compassion for coworkers
+      79. Strong commitment to patient care
+      80. Values teamwork
+      81. Knowledgeable about latest research
+      82. Nonjudgmental
+      83. Works well under supervision
+      84. Adheres to protocols
+      85. Good self-discipline
+      86. Clear communicator
+      87. Good at building rapport
+      88. Intellectually curious
+      89. Accountable
+      90. Takes initiative
+      91. Handles conflict well
+      92. Good organizational skills
+      93. Detail-focused in documentation
+      94. Proficient in medical procedures
+      95. Good hand-eye coordination
+      96. Emotionally stable
+      97. Good at managing stress
+      98. Good at prioritizing tasks
+      99. Values continuous improvement
+      100. Committed to lifelong learning
+
+    2. Match Characteristics:
+      - Compare the extracted characteristics with the list of program values provided.
+      - Count how many of the extracted characteristics match the program values.
+
+    Response Format:
+    Please provide your response in the following JSON format:
+    {
+      "characteristicsInLOR": [
+        // List the top five characteristics identified in the Letter of Recommendation that match the list
+      ],
+      "matchedCharacteristics": "number of characteristics matched/total number of program values",
+      "matchedCharacteristicsProof": {
+        "The matched Characteristic": "The characteristic in program value which is used to match"
+      }
+    }
+
+
+    Example:
+    If the program values are "motivated, hardworking, collaborative" and the Letter of Recommendation mentions "motivated, hardworking,  creative, Efficient, Physically resilient", but "creative" is not on the list, use the synonym "innovative" from the list instead:
+
+    {
+      "characteristicsInLOR": ["motivated", "hardworking", "innovative,Efficient,Physically resilient"],
+      "matchedCharacteristics": "2/3",
+      "matchedCharacteristicsProof": {
+        "motivated": "motivated",
+        "hardworking": "hardworking"
+      }
+    }
+
+    `
     const thread = await openai.beta.threads.create();
 
 
@@ -343,9 +598,9 @@ ${charList}.
       thread.id,
     {
       role: "user",
-      content: `Valued characteristics: ${programValues}\n
-                  Letter of Recommendations: \n${refinedLors} `
-      // content:user_message
+      // content: `Valued characteristics: ${programValues}\n
+      //             Letter of Recommendations: \n${refinedLors} `
+      content:user_message
     })
 
     const run = await openai.beta.threads.runs.create(
