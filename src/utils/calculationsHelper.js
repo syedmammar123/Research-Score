@@ -375,7 +375,7 @@ import  {charList}  from "../data/charateristicsList";
     If the program values are "motivated, hardworking, collaborative" and the Statement of Purpose mentions "motivated, hardworking, and creative", but "creative" is not on the list, use the synonym "innovative" from the list instead:
 
     {
-      "characteristicsInSOP": ["motivated", "hardworking", "innovative"],
+      "characteristicsInSOP": ["Motivated", "Hardworking", "Innovative"],
       "matchedCharacteristics": "2/3",
       "matchedCharacteristicsProof": {
         "motivated": "motivated",
@@ -580,7 +580,7 @@ import  {charList}  from "../data/charateristicsList";
     If the program values are "motivated, hardworking, collaborative" and the Letter of Recommendation mentions "motivated, hardworking,  creative, Efficient, Physically resilient", but "creative" is not on the list, use the synonym "innovative" from the list instead:
 
     {
-      "characteristicsInLOR": ["motivated", "hardworking", "innovative,Efficient,Physically resilient"],
+      "characteristicsInLOR": ["Motivated", "Hardworking", "Innovative,Efficient,Physically resilient"],
       "matchedCharacteristics": "2/3",
       "matchedCharacteristicsProof": {
         "motivated": "motivated",
